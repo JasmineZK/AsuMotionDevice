@@ -10,9 +10,9 @@ namespace TestAsuDll
     /// </summary>
     class Device
     {
-        public int num
-        { get; }
-        public string serial
-        { get; }
+        public int Num
+        { get; set; }
+        public string Serial
+        { get; set; }
     }
 }

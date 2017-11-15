@@ -33,6 +33,7 @@
             this.btn_getDeviceInfo = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.cbb_DeviceInfo = new System.Windows.Forms.ComboBox();
+            this.btn_openDevice = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_getDeviceNum
@@ -71,11 +72,22 @@
             this.cbb_DeviceInfo.Size = new System.Drawing.Size(121, 20);
             this.cbb_DeviceInfo.TabIndex = 2;
             // 
+            // btn_openDevice
+            // 
+            this.btn_openDevice.Location = new System.Drawing.Point(262, 12);
+            this.btn_openDevice.Name = "btn_openDevice";
+            this.btn_openDevice.Size = new System.Drawing.Size(75, 23);
+            this.btn_openDevice.TabIndex = 3;
+            this.btn_openDevice.Text = "打开设备";
+            this.btn_openDevice.UseVisualStyleBackColor = true;
+            this.btn_openDevice.Click += new System.EventHandler(this.btn_openDevice_Click);
+            // 
             // Form_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(756, 471);
+            this.Controls.Add(this.btn_openDevice);
             this.Controls.Add(this.cbb_DeviceInfo);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.btn_getDeviceInfo);
@@ -94,6 +106,7 @@
         private System.Windows.Forms.Button btn_getDeviceInfo;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ComboBox cbb_DeviceInfo;
+        private System.Windows.Forms.Button btn_openDevice;
     }
 }
 

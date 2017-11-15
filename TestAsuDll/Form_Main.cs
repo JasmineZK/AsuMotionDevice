@@ -42,31 +42,57 @@ namespace TestAsuDll
             }
         }
 
+        /// <summary>
         /// 获取当前设备数量
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_getDeviceNum_Click(object sender, EventArgs e)
         {
-            int result = AsuInvoke.Asu_GetDeviceNum();
-            this.richTextBox1.Text = "当前设备数：" + result;
+            int ret = AsuInvoke.Asu_GetDeviceNum();
+            Print("当前设备数：" + ret);
         }
 
+        /// <summary>
         /// 获取当前设备信息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_getDeviceInfo_Click(object sender, EventArgs e)
         {
             byte[] serial = new byte[100];
-            int result = AsuInvoke.Asu_GetDeviceInfo(0, serial);
-            switch(result)
+            int ret = AsuInvoke.Asu_GetDeviceInfo(0, serial);
+            switch (ret)
             {
                 case 0:
-                    richTextBox1.AppendText("AsuMotion_Error_Ok 正常，设备 " + 0 + " 的序号为：" + serial );
+                    Print("AsuMotion_Error_Ok 正常，设备 " + 0 + " 的序号为：" + serial);
                     break;
                 case 1:
-                    richTextBox1.AppendText("AsuMotion_Error_NullPointer 空指针"); break;
+                    Print("AsuMotion_Error_NullPointer 空指针"); break;
                 case 2:
-                    richTextBox1.AppendText("AsuMotion_Error 有错误发生"); break;
+                    Print("AsuMotion_Error 有错误发生"); break;
                 case 3:
-                    richTextBox1.AppendText("AsuMotion_Error_True 真"); break;
+                    Print("AsuMotion_Error_True 真"); break;
                 case 4:
-                    richTextBox1.AppendText("AsuMotion_Error_False 假"); break;
+                    Print("AsuMotion_Error_False 假"); break;
+            }
+        }
+
+        /// <summary>
+        /// 打开设备
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_openDevice_Click(object sender, EventArgs e)
+        {
+            int ret = AsuInvoke.Asu_AsuMotionOpen(0);
+            if (ret == 0)
+            {
+                Print("打开设备" + 0 + "成功");
+            }
+            else
+            {
+                Print("打开设备" + 0 + "失败");
             }
         }
     }
