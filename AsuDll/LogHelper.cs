@@ -7,7 +7,7 @@ namespace AsuDll
     /// </summary>
     public class LogHelper
     {
-        static ILog loger = LogManager.GetLogger( "DssAssistant" );
+        static ILog loger = LogManager.GetLogger( "Asu" );
 
         public static void WriteLog(string info)
         {
