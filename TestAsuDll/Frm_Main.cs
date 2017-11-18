@@ -138,5 +138,23 @@ namespace TestAsuDll
                 LogHelper.WriteLog("设备" + 0 + "初始化为默认失败");
             }
         }
+
+        private void AsuMotionStopAll(object sender, EventArgs e)
+        {
+            int ret = AsuInvoke.Asu_AsuMotionStopAll();
+            if (ret == 0)
+            {
+                Print("停止由运动控制卡规划的所有轴的运动 成功");
+                LogHelper.WriteLog("停止由运动控制卡规划的所有轴的运动 成功");
+
+            }
+            else
+            {
+                Print("停止由运动控制卡规划的所有轴的运动 失败");
+                LogHelper.WriteLog("停止由运动控制卡规划的所有轴的运动 失败");
+            }
+        }
+
+
     }
 }

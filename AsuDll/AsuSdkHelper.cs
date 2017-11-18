@@ -20,6 +20,10 @@ namespace AsuDll
         AsuMotion_Error = 2,
         AsuMotion_True = 3,
         AsuMotion_False = 4,
+        AsuMotion_Buffer_Full = 5,
+        AsuMotion_CurrentState_Isnot_PCPlan = 6,
+        AsuMotion_CurrentState_Isnot_Idle = 7,
+        AsuMotion_CurrentState_Isnot_CardPlan = 8,
     }
     [StructLayout(LayoutKind.Sequential)]
     public struct AsuMotionPosition
@@ -167,6 +171,16 @@ namespace AsuDll
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern AsuMotionError AsuMotionGetSmoothCoff(IntPtr AsuMotion, ref UInt32 pSmoothCoff);
 
+        /// /// <summary>
+        /// 配置光滑系数和脉冲延时
+        /// </summary>
+        /// <param name="DelayBetweenPulseAndDir">脉冲的有效沿和方向的有效沿之间有充分的时间差</param>
+        /// <param name="SmoothCoff">光滑系数</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetSmoothCoff(IntPtr AsuMotion, UInt16 DelayBetweenPulseAndDir, Int32 SmoothCoff);
+
+
         /// <summary>
         /// 获取板卡脉冲每毫米的参数配置值
         /// </summary>
@@ -184,7 +198,7 @@ namespace AsuDll
         /// <param name="DirNeg">方向反相掩码，0 --> 任何轴方向输出不反相， 1 --> X轴方向输出反相， 5 --> X与Z轴方向输出反相</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionSetStepNegAndDirNeg(IntPtr AsuMotion, Byte StepNeg, Byte DirNeg);
+        public static extern AsuMotionError AsuMotionSetStepNegAndDirNeg(IntPtr AsuMotion, byte StepNeg, byte DirNeg);
 
         /// <summary>
         /// 配置板卡参数：脉冲每毫米，细分数，脉冲方向延时
@@ -204,7 +218,7 @@ namespace AsuDll
 
         #region  板卡规划运动
         /// <summary>
-        /// 相当于机械坐标的运动
+        /// 相对于机械坐标的运动
         /// </summary>
         /// <param name="AsuMotion">AsuMotion资源句柄</param>
         /// <param name="AxisMask">运动轴使能掩码，0 --> 任何轴的运动都被禁止， 1 --> X轴运动使能 3 --> X,Y轴运动使能</param>

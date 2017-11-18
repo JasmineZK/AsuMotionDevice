@@ -36,6 +36,7 @@
             this.btn_openDevice = new System.Windows.Forms.Button();
             this.btn_AsuMotionConfigDeviceDefault = new System.Windows.Forms.Button();
             this.btn_closeDevice = new System.Windows.Forms.Button();
+            this.btn_AsuMotionStopAll = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_getDeviceNum
@@ -104,11 +105,22 @@
             this.btn_closeDevice.UseVisualStyleBackColor = true;
             this.btn_closeDevice.Click += new System.EventHandler(this.CloseDevice);
             // 
+            // btn_AsuMotionStopAll
+            // 
+            this.btn_AsuMotionStopAll.Location = new System.Drawing.Point(251, 71);
+            this.btn_AsuMotionStopAll.Name = "btn_AsuMotionStopAll";
+            this.btn_AsuMotionStopAll.Size = new System.Drawing.Size(129, 36);
+            this.btn_AsuMotionStopAll.TabIndex = 5;
+            this.btn_AsuMotionStopAll.Text = "停止由运动控制卡规划的所有轴的运动";
+            this.btn_AsuMotionStopAll.UseVisualStyleBackColor = true;
+            this.btn_AsuMotionStopAll.Click += new System.EventHandler(this.AsuMotionStopAll);
+            // 
             // Frm_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(627, 299);
+            this.Controls.Add(this.btn_AsuMotionStopAll);
             this.Controls.Add(this.btn_AsuMotionConfigDeviceDefault);
             this.Controls.Add(this.btn_closeDevice);
             this.Controls.Add(this.btn_openDevice);
@@ -133,6 +145,7 @@
         private System.Windows.Forms.Button btn_openDevice;
         private System.Windows.Forms.Button btn_AsuMotionConfigDeviceDefault;
         private System.Windows.Forms.Button btn_closeDevice;
+        private System.Windows.Forms.Button btn_AsuMotionStopAll;
     }
 }
 
