@@ -6,10 +6,10 @@
 ----|----
 TestAsuDll|Asu.Dll的测试demo，Winform
 AsuDll|Asu.Dll的制作工程，纯类库
-Asu_SDK|Asu商家给的SDK，包括***开发文档AsuMotionUGV2.pdf***，以及***DLL_x86***文件夹下的C++动态链接库***AsuMotionDevice.dll***  
+Asu_SDK|Asu商家给的SDK，包括**开发文档AsuMotionUGV2.pdf**，以及**DLL_x86***件夹下的C++动态链接库**AsuMotionDevice.dll**  
 
 ***  
 
 ### 注意事项  
 
-将 ***Asu_SDK*** 文件夹下的***DLL_x86***文件夹下的C++动态链接库 ***AsuMotionDevice.dll*** 复制到***程序调试目录***下，在VS中调试时选择***x86***模式
+将 **Asu_SDK** 文件夹下的**DLL_x86**文件夹下的C++动态链接库 **AsuMotionDevice.dll** 复制到**程序调试目录**下，在VS中调试时选择**x86**模式
