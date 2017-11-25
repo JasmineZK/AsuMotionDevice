@@ -43,7 +43,8 @@ namespace TestAsuDll
             }
             else
             {
-                this.richTextBox1.Text = text + "\r\n";
+                string past = this.richTextBox1.Text;
+                this.richTextBox1.Text = text + "\r\n" + past;
             }
         }
 
@@ -155,6 +156,20 @@ namespace TestAsuDll
             }
         }
 
+        private void AsuMotionStop(object sender, EventArgs e)
+        {
+            int ret = AsuInvoke.Asu_AsuMotionStop(0); 
+            if (ret == 0)
+            {
+                Print("停止由板卡规划的特定的轴的运动 成功");
+                LogHelper.WriteLog("停止由板卡规划的特定的轴的运动 成功");
 
+            }
+            else
+            {
+                Print("停止由板卡规划的特定的轴的运动 失败");
+                LogHelper.WriteLog("停止由板卡规划的特定的轴的运动 失败");
+            }
+        }
     }
 }

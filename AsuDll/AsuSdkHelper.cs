@@ -279,7 +279,7 @@ namespace AsuDll
         /// <param name="AsuMotion">AsuMotion资源句柄</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionStopAll(IntPtr AsuMotion);
+        public static extern AsuMotionError AsuMotionCardPlanStopAll(IntPtr AsuMotion);
 
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace AsuDll
         /// <param name="Axis">0 --> X轴停止运动， 1 --> Y轴停止运动 2 --> Z轴停止运动</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionStop(IntPtr AsuMotion, ushort Axis);
+        public static extern AsuMotionError AsuMotionCardPlanStop(IntPtr AsuMotion, ushort Axis);
 
         /// <summary>
         /// 配置板卡当前的机械坐标
@@ -386,22 +386,6 @@ namespace AsuDll
                 double ini_maxvel,
                 double acc
                 );
-
-        /// <summary>
-        /// 正在执行的PC规划指令所占的缓冲区长度
-        /// </summary>
-        /// <param name="AsuMotion">AsuMotion资源句柄</param>
-        /// <returns></returns>
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern int AsuMotionActiveDepth(IntPtr AsuMotion);
-
-        /// <summary>
-        /// 当前AsuMotion指令缓存区长度
-        /// </summary>
-        /// <param name="AsuMotion">AsuMotion资源句柄</param>
-        /// <returns></returns>
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern int AsuMotionQueueDepth(IntPtr AsuMotion);
 
         /// <summary>
         /// 设置PC规划运动的停止类型
