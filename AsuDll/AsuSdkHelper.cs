@@ -5,6 +5,9 @@ namespace AsuDll
 {
     #region Enum and Struct
 
+    /// <summary>
+    /// 运动函数停止类型
+    /// </summary>
     public enum AsuMotionStopType
     {
         AsuMotion_Stop_Type_Stop = 0,
@@ -13,10 +16,99 @@ namespace AsuDll
         AsuMotion_Stop_Type_Tangent = 3
     }
 
+    /// <summary>
+    /// 控制卡回原点模
+    /// </summary>
+    public enum AsuMotionHomingType
+    {
+        AsuMotion_Homing_NoMoving = 0x0000,
+        AsuMotion_Homing_AtSwitch = 0x0001,
+        AsuMotion_Homing_LeaveSwitch = 0x0002,
+        AsuMotion_Homing_MultipleHome = 0x0003,
+    }
+
+    /// <summary>
+    /// 轴索引选取类型
+    /// </summary>
+    public enum AsuMotionAxisIndexType
+    {
+        AsuMotion_AxisIndex_X = 0x0000,
+        AsuMotion_AxisIndex_Y = 0x0001,
+        AsuMotion_AxisIndex_Z = 0x0002,
+        AsuMotion_AxisIndex_A = 0x0003,
+        AsuMotion_AxisIndex_B = 0x0004,
+        AsuMotion_AxisIndex_C = 0x0005,
+        AsuMotion_AxisIndex_U = 0x0006,
+        AsuMotion_AxisIndex_V = 0x0007,
+        AsuMotion_AxisIndex_W = 0x0008
+    }
+
+    /// <summary>
+    /// 位屏蔽类型
+    /// </summary>
+    public enum AsuMotionBitMaskType
+    {
+        AsuMotion_BitMask_NULL = 0x00000000,
+        AsuMotion_BitMask_00 = 0x00000001,
+        AsuMotion_BitMask_01 = 0x00000002,
+        AsuMotion_BitMask_02 = 0x00000004,
+        AsuMotion_BitMask_03 = 0x00000008,
+        AsuMotion_BitMask_04 = 0x00000010,
+        AsuMotion_BitMask_05 = 0x00000020,
+        AsuMotion_BitMask_06 = 0x00000040,
+        AsuMotion_BitMask_07 = 0x00000080,
+        AsuMotion_BitMask_08 = 0x00000100,
+        AsuMotion_BitMask_09 = 0x00000200,
+        AsuMotion_BitMask_10 = 0x00000400,
+        AsuMotion_BitMask_11 = 0x00000800,
+        AsuMotion_BitMask_12 = 0x00001000,
+        AsuMotion_BitMask_13 = 0x00002000,
+        AsuMotion_BitMask_14 = 0x00004000,
+        AsuMotion_BitMask_15 = 0x00008000,
+        AsuMotion_BitMask_16 = 0x00010000,
+        AsuMotion_BitMask_17 = 0x00020000,
+        AsuMotion_BitMask_18 = 0x00040000,
+        AsuMotion_BitMask_19 = 0x00080000,
+        AsuMotion_BitMask_20 = 0x00100000,
+        AsuMotion_BitMask_21 = 0x00200000,
+        AsuMotion_BitMask_22 = 0x00400000,
+        AsuMotion_BitMask_23 = 0x00800000,
+        AsuMotion_BitMask_24 = 0x01000000,
+        AsuMotion_BitMask_25 = 0x02000000,
+        AsuMotion_BitMask_26 = 0x04000000,
+        AsuMotion_BitMask_27 = 0x08000000,
+        AsuMotion_BitMask_28 = 0x10000000,
+        AsuMotion_BitMask_29 = 0x20000000,
+        AsuMotion_BitMask_30 = 0x40000000,
+        AsuMotion_BitMask_31 = 0x8000000 // 本为 0x80000000 ， 由于C#的enum仅支持Int32，0x80000000超过了最大值，设为0x8000000，后续使用时将其右移一位即可
+    }
+
+    /// <summary>
+    /// 轴屏蔽选取类型
+    /// </summary>
+    public enum AsuMotionAxisMaskType
+    {
+        AsuMotion_AxisMask_X = 0x0001,
+        AsuMotion_AxisMask_Y = 0x0002,
+        AsuMotion_AxisMask_Z = 0x0004,
+        AsuMotion_AxisMask_A = 0x0008,
+        AsuMotion_AxisMask_B = 0x0010,
+        AsuMotion_AxisMask_C = 0x0020,
+        AsuMotion_AxisMask_U = 0x0040,
+        AsuMotion_AxisMask_V = 0x0080,
+        AsuMotion_AxisMask_W = 0x0100,
+        AsuMotion_SpindleMask_X = 0x0200,
+        AsuMotion_SpindleMask_Y = 0x0400,
+        AsuMotion_SpindleMask_Z = 0x0800,
+        AsuMotion_AxisMask_All = 0x01ff,
+    }
+    /// <summary>
+    /// 函数错误类型
+    /// </summary>
     public enum AsuMotionError
     {
         AsuMotion_Error_Ok = 0,
-        AsuMotion_Error_NullPointer = 1,
+        AsuMotion_Device_Is_Null = 1,
         AsuMotion_Error = 2,
         AsuMotion_True = 3,
         AsuMotion_False = 4,
@@ -25,13 +117,32 @@ namespace AsuDll
         AsuMotion_CurrentState_Isnot_Idle = 7,
         AsuMotion_CurrentState_Isnot_CardPlan = 8,
     }
+
+    /// <summary>
+    /// 坐标轴数据
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct AsuMotionPosition
+    public struct AsuMotionAxisDataInt
+    {
+        public int x, y, z;
+        public int a, b, c;
+        public int u, v, w;
+    }
+
+    /// <summary>
+    /// 坐标轴数据
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AsuMotionAxisData
     {
         public double x, y, z;
         public double a, b, c;
         public double u, v, w;
     }
+
+    /// <summary>
+    /// 笛卡尔坐标类型
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct AsuMotionCartesian
     {
@@ -42,7 +153,6 @@ namespace AsuDll
 
     public class AsuSdkHelper
     {
-        #region  通用功能
         /// <summary>   
         /// 开启与AsuMotion的通讯
         /// </summary>
@@ -59,6 +169,62 @@ namespace AsuDll
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern AsuMotionError AsuMotionGetSpindlePostion(IntPtr AsuMotion, [MarshalAs(UnmanagedType.LPArray,SizeParamIndex=1)] ushort[] SpindlePostion);
+
+        /// <summary>
+        /// 配置运动卡差分输出的信号映射
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="FunSel">映射号数组，共16个元素，其值得设定将反应16个差分输出的内容</param>
+        /// <param name="NegMask">设定16个差分输出口是否反向输出</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetDifferentialOutputMapping(IntPtr AsuMotion, byte[] FunSel, AsuMotionBitMaskType NegMask);
+
+        /// <summary>
+        /// 配置运动卡规划运动的加速度
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="Acceleration">一个存储各轴加速度的结构体</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetAccelaration(IntPtr AsuMotion, AsuMotionAxisData Acceleration);
+
+        /// <summary>
+        /// 配置运动卡规划运动的最大速度
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="MaxSpeed">一个存储各轴速度的结构体</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetMaxSpeed(IntPtr AsuMotion, AsuMotionAxisData MaxSpeed);
+
+        /// <summary>
+        /// 配置机器坐标
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <param name="Position">一个存储各轴机器坐标的结构体</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetMachineCoordinate(IntPtr AsuMotion, AsuMotionAxisMaskType AxisMask, AsuMotionAxisData Position);
+
+        /// <summary>
+        /// 配置正向软限位
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="SoftPositiveLimit">正向软限位坐标的结构体</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetSoftPositiveLimit(IntPtr AsuMotion, AsuMotionAxisData SoftPositiveLimit);
+
+        /// <summary>
+        /// 配置正向软限位
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="SoftNegtiveLimit">反向软限位坐标的结构体</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetSoftNegtiveLimit(IntPtr AsuMotion, AsuMotionAxisData SoftNegtiveLimit);
 
         /// <summary>
         /// 板卡轴输出配置
@@ -91,8 +257,7 @@ namespace AsuDll
         public static extern AsuMotionError AsuMotionSetInputIOEngineDir(IntPtr AsuMotion,
                 UInt64 InputIOEnable,
                 UInt64 InputIONeg,
-                [MarshalAs(UnmanagedType.LPArray, SizeConst = 64)]byte[] InputIOPin,
-                [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)]sbyte[] EngineDirections
+                [MarshalAs(UnmanagedType.LPArray, SizeConst = 64)]byte[] InputIOPin
             );
 
         /// <summary>
@@ -108,7 +273,7 @@ namespace AsuDll
         /// <param name="Num">为0:PC连接的第一个AsuMotion，为1:PC连接的第二个AsuMotion，在PC只与一个AsuMotion相连时，此项配为0即可</param>
         /// <param name="SerialString">用于存储序列号的字节数组</param>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError GetDeviceInfo(int Num, [Out, MarshalAs(UnmanagedType.LPArray)] byte[] SerialString);
+        public static extern AsuMotionError GetDeviceInfo(int Num, out byte[] SerialString);
 
         /// <summary>
         /// 断开与AsuMotion的通讯
@@ -117,6 +282,15 @@ namespace AsuDll
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern AsuMotionError AsuMotionClose(IntPtr AsuMotion);
+
+        /// <summary>
+        /// 配置工作偏移
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="WorkOffset">工作偏移</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionSetWorkOffset(IntPtr AsuMotion,AsuMotionAxisDataInt WorkOffset);
 
         /// <summary>
         /// 初始化AsuMotion参数配置
@@ -142,7 +316,7 @@ namespace AsuDll
         /// <param name="Steps">各轴相对于机械原点的脉冲总量的存储区域</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionGetSteps(IntPtr AsuMotion, [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)]Int32[] Steps);
+        public static extern AsuMotionError AsuMotionGetSteps(IntPtr AsuMotion, out AsuMotionAxisDataInt Steps);
 
         /// <summary>
         /// 配置主轴输出
@@ -201,22 +375,14 @@ namespace AsuDll
         public static extern AsuMotionError AsuMotionSetStepNegAndDirNeg(IntPtr AsuMotion, byte StepNeg, byte DirNeg);
 
         /// <summary>
-        /// 配置板卡参数：脉冲每毫米，细分数，脉冲方向延时
+        /// 配置单位脉冲数
         /// </summary>
         /// <param name="AsuMotion">AsuMotion资源句柄</param>
-        /// <param name="DelayBetweenPulseAndDir">脉冲方向延时</param>
-        /// <param name="StepsPerAxis">脉冲每毫米 0 --> X轴脉冲每毫米 1 --> Y轴脉冲每毫米</param>
-        /// <param name="WorkOffset">保留参数，暂不使用</param>
-        /// <param name="SmoothCoff">细分数</param>
+        /// <param name="StepsPerUnit">单位脉冲数</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionSetStepsPerUnitSmoothCoff(IntPtr AsuMotion, ushort DelayBetweenPulseAndDir,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)]int[] StepsPerAxis,
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)]int[] WorkOffset, int SmoothCoff);
+        public static extern AsuMotionError AsuMotionSetStepsPerUnit(IntPtr AsuMotion, AsuMotionAxisDataInt StepsPerUnit);
 
-        #endregion
-
-        #region  板卡规划运动
         /// <summary>
         /// 相对于机械坐标的运动
         /// </summary>
@@ -304,14 +470,12 @@ namespace AsuDll
         /// 点动运行，需要调用Stop停止
         /// </summary>
         /// <param name="AsuMotion">AsuMotion资源句柄</param>
-        /// <param name="Axis">运动轴使能掩码，0 --> 任何轴的运动都被禁止， 1 --> X轴运动使能 3 --> X,Y轴运动使能</param>
-        /// <param name="PositionGiven">运动目的位置，单位毫米 0 --> X 1 --> Y 2 --> Z 3 --> A</param>
+        /// <param name="Axis">配置当前需要运行的轴</param>
+        /// <param name="PositionGiven">给定一个点动运行时，机器的目标位置。此位置为相对位置</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionJogOn(IntPtr AsuMotion, ushort Axis, ref double PositionGiven);
-        #endregion
+        public static extern AsuMotionError AsuMotionJogOn(IntPtr AsuMotion, AsuMotionAxisIndexType Axis, double PositionGiven);
 
-        #region  PC规划运动
         /// <summary>
         /// 恢复经AsuMotionPause停止的运动PC规划运动
         /// </summary>
@@ -337,7 +501,7 @@ namespace AsuDll
         public static extern AsuMotionError AsuMotionAbort(IntPtr AsuMotion);
 
         /// <summary>
-        /// 当前的PC规划运动已经结束
+        /// 查询当前运动卡是否处于运动状态中
         /// </summary>
         /// <param name="AsuMotion">AsuMotion资源句柄</param>
         /// <returns></returns>
@@ -351,7 +515,7 @@ namespace AsuDll
         /// <param name="Pos">期望配置坐标值的位置结构体</param>
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionSetCurrentPostion(IntPtr AsuMotion, ref AsuMotionPosition Pos);//DONE
+        public static extern AsuMotionError AsuMotionSetCurrentPostion(IntPtr AsuMotion, ref AsuMotionAxisData Pos);//DONE
 
         /// <summary>
         /// 添加直线运动轨迹
@@ -362,7 +526,7 @@ namespace AsuDll
         /// <param name="ini_maxvel">最大允许速度</param>
         /// <param name="acc">加速度</param>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern AsuMotionError AsuMotionAddLine(IntPtr AsuMotion, ref AsuMotionPosition end, double vel, double ini_maxvel, double acc);
+        public static extern AsuMotionError AsuMotionAddLine(IntPtr AsuMotion, ref AsuMotionAxisData end, double vel, double ini_maxvel, double acc);
 
 
         /// <summary>
@@ -378,7 +542,7 @@ namespace AsuDll
         /// <param name="acc">加速度</param>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern AsuMotionError AsuMotionAddCircle(IntPtr AsuMotion,
-                ref AsuMotionPosition end,
+                ref AsuMotionAxisData end,
                 ref AsuMotionCartesian center,
                 ref AsuMotionCartesian normal,
                 int turn,
@@ -396,6 +560,5 @@ namespace AsuDll
         /// <returns></returns>
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern AsuMotionError AsuMotionSetStopType(IntPtr AsuMotion, AsuMotionStopType type, double tolerance);
-        #endregion
     }
 }

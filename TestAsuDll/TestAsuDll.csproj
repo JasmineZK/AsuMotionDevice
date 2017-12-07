@@ -66,7 +66,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Device.cs" />
     <Compile Include="Frm_Main.cs">
       <SubType>Form</SubType>
     </Compile>

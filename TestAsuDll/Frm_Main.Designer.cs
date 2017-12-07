@@ -38,13 +38,32 @@
             this.btn_closeDevice = new System.Windows.Forms.Button();
             this.btn_AsuMotionStopAll = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
+            this.button14 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button15 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
+            this.button18 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
+            this.button20 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_getDeviceNum
             // 
-            this.btn_getDeviceNum.Location = new System.Drawing.Point(526, 12);
+            this.btn_getDeviceNum.Location = new System.Drawing.Point(399, 55);
             this.btn_getDeviceNum.Name = "btn_getDeviceNum";
             this.btn_getDeviceNum.Size = new System.Drawing.Size(121, 23);
             this.btn_getDeviceNum.TabIndex = 0;
@@ -54,7 +73,7 @@
             // 
             // btn_getDeviceInfo
             // 
-            this.btn_getDeviceInfo.Location = new System.Drawing.Point(526, 41);
+            this.btn_getDeviceInfo.Location = new System.Drawing.Point(399, 84);
             this.btn_getDeviceInfo.Name = "btn_getDeviceInfo";
             this.btn_getDeviceInfo.Size = new System.Drawing.Size(121, 23);
             this.btn_getDeviceInfo.TabIndex = 0;
@@ -80,17 +99,17 @@
             // 
             // btn_openDevice
             // 
-            this.btn_openDevice.Location = new System.Drawing.Point(670, 12);
+            this.btn_openDevice.Location = new System.Drawing.Point(399, 113);
             this.btn_openDevice.Name = "btn_openDevice";
             this.btn_openDevice.Size = new System.Drawing.Size(75, 23);
             this.btn_openDevice.TabIndex = 3;
             this.btn_openDevice.Text = "打开设备";
             this.btn_openDevice.UseVisualStyleBackColor = true;
-            this.btn_openDevice.Click += new System.EventHandler(this.OpenDevice);
+            this.btn_openDevice.Click += new System.EventHandler(this.AsuMotionOpen);
             // 
             // btn_AsuMotionConfigDeviceDefault
             // 
-            this.btn_AsuMotionConfigDeviceDefault.Location = new System.Drawing.Point(765, 12);
+            this.btn_AsuMotionConfigDeviceDefault.Location = new System.Drawing.Point(399, 142);
             this.btn_AsuMotionConfigDeviceDefault.Name = "btn_AsuMotionConfigDeviceDefault";
             this.btn_AsuMotionConfigDeviceDefault.Size = new System.Drawing.Size(113, 23);
             this.btn_AsuMotionConfigDeviceDefault.TabIndex = 4;
@@ -100,19 +119,19 @@
             // 
             // btn_closeDevice
             // 
-            this.btn_closeDevice.Location = new System.Drawing.Point(670, 41);
+            this.btn_closeDevice.Location = new System.Drawing.Point(480, 113);
             this.btn_closeDevice.Name = "btn_closeDevice";
             this.btn_closeDevice.Size = new System.Drawing.Size(75, 23);
             this.btn_closeDevice.TabIndex = 3;
             this.btn_closeDevice.Text = "关闭设备";
             this.btn_closeDevice.UseVisualStyleBackColor = true;
-            this.btn_closeDevice.Click += new System.EventHandler(this.CloseDevice);
+            this.btn_closeDevice.Click += new System.EventHandler(this.AsuMotionClose);
             // 
             // btn_AsuMotionStopAll
             // 
-            this.btn_AsuMotionStopAll.Location = new System.Drawing.Point(765, 42);
+            this.btn_AsuMotionStopAll.Location = new System.Drawing.Point(399, 345);
             this.btn_AsuMotionStopAll.Name = "btn_AsuMotionStopAll";
-            this.btn_AsuMotionStopAll.Size = new System.Drawing.Size(113, 36);
+            this.btn_AsuMotionStopAll.Size = new System.Drawing.Size(220, 23);
             this.btn_AsuMotionStopAll.TabIndex = 5;
             this.btn_AsuMotionStopAll.Text = "停止由运动控制卡规划的所有轴的运动";
             this.btn_AsuMotionStopAll.UseVisualStyleBackColor = true;
@@ -128,22 +147,231 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Log";
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(399, 171);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(147, 23);
+            this.button3.TabIndex = 9;
+            this.button3.Text = "配置光滑系数和脉冲延时";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.AsuMotionSetSmoothCoff);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(399, 374);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(197, 23);
+            this.button4.TabIndex = 10;
+            this.button4.Text = "查询当前运动卡是否处于运动状态中";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.AsuMotionIsDone);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(399, 200);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(102, 23);
+            this.button6.TabIndex = 11;
+            this.button6.Text = "配置单位脉冲数";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.AsuMotionSetStepsPerUnit);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(399, 258);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(182, 23);
+            this.button7.TabIndex = 11;
+            this.button7.Text = "配置运动卡差分输出的信号映射";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.AsuMotionSetDifferentialOutputMapping);
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(399, 229);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(87, 23);
+            this.button8.TabIndex = 11;
+            this.button8.Text = "配置工作偏移";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.AsuMotionSetWorkOffset);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(399, 287);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(170, 23);
+            this.button9.TabIndex = 11;
+            this.button9.Text = "配置运动卡规划运动的加速度";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.AsuMotionSetAccelaration);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(399, 316);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(182, 23);
+            this.button5.TabIndex = 12;
+            this.button5.Text = "配置运动卡规划运动的最大速度";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.AsuMotionSetMaxSpeed);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(507, 461);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(102, 23);
+            this.button11.TabIndex = 12;
+            this.button11.Text = "配置反向软限位";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.AsuMotionSetSoftNegtiveLimit);
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(399, 461);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(102, 23);
+            this.button12.TabIndex = 12;
+            this.button12.Text = "配置正向软限位";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.AsuMotionSetSoftPositiveLimit);
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(399, 403);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(182, 23);
+            this.button13.TabIndex = 12;
+            this.button13.Text = "当前机器坐标位置脉冲数获取";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.AsuMotionGetSteps);
+            // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(399, 432);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(87, 23);
+            this.button14.TabIndex = 12;
+            this.button14.Text = "配置机器坐标";
+            this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.AsuMotionSetMachineCoordinate);
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(765, 84);
+            this.button1.Location = new System.Drawing.Point(676, 21);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(113, 36);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "停止由板卡规划的特定的轴的运动";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "Y：+100";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.AsuMotionStop);
+            this.button1.Click += new System.EventHandler(this.AsuMotionJogOn_Y_Increase);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(603, 55);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 13;
+            this.button2.Text = "X：-100";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.AsuMotionJogOn_X_Decrease);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(676, 84);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(75, 23);
+            this.button10.TabIndex = 13;
+            this.button10.Text = "Y：-100";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.AsuMotionJogOn_Y_Decrease);
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(747, 55);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(75, 23);
+            this.button15.TabIndex = 13;
+            this.button15.Text = "X：+100";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.AsuMotionJogOn_X_Increase);
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(735, 126);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(75, 23);
+            this.button16.TabIndex = 13;
+            this.button16.Text = "Z：+100";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.AsuMotionJogOn_Z_Increase);
+            // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(616, 126);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(75, 23);
+            this.button17.TabIndex = 13;
+            this.button17.Text = "Z：-100";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.AsuMotionJogOn_Z_Decrease);
+            // 
+            // button18
+            // 
+            this.button18.Location = new System.Drawing.Point(663, 171);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(104, 23);
+            this.button18.TabIndex = 13;
+            this.button18.Text = "暂停当前运动";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.AsuMotionPause);
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(663, 200);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(104, 23);
+            this.button19.TabIndex = 13;
+            this.button19.Text = "恢复暂停的运动";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.AsuMotionResume);
+            // 
+            // button20
+            // 
+            this.button20.Location = new System.Drawing.Point(663, 229);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(104, 23);
+            this.button20.TabIndex = 13;
+            this.button20.Text = "急停";
+            this.button20.UseVisualStyleBackColor = true;
+            this.button20.Click += new System.EventHandler(this.AsuMotionEStop);
             // 
             // Frm_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(997, 497);
+            this.ClientSize = new System.Drawing.Size(845, 497);
+            this.Controls.Add(this.button20);
+            this.Controls.Add(this.button19);
+            this.Controls.Add(this.button18);
+            this.Controls.Add(this.button17);
+            this.Controls.Add(this.button16);
+            this.Controls.Add(this.button15);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.button14);
+            this.Controls.Add(this.button13);
+            this.Controls.Add(this.button12);
+            this.Controls.Add(this.button11);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button9);
+            this.Controls.Add(this.button8);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_AsuMotionStopAll);
             this.Controls.Add(this.btn_AsuMotionConfigDeviceDefault);
@@ -172,7 +400,26 @@
         private System.Windows.Forms.Button btn_closeDevice;
         private System.Windows.Forms.Button btn_AsuMotionStopAll;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button14;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.Button button20;
     }
 }
 
