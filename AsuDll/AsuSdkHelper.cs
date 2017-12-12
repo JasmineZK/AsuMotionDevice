@@ -153,6 +153,44 @@ namespace AsuDll
 
     public class AsuSdkHelper
     {
+        /// <summary>
+        /// 输出口状态获取
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="pOutput">IO状态缓冲区，长度至少为2，函数调用成功后，这里面的值将为IO状态</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionGetOutputIO(IntPtr AsuMotion, ushort[] pOutput);
+
+        /// <summary>
+        /// 添加同步IO直线插补规划
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="end">指定当前直线的终点坐标</param>
+        /// <param name="vel">指定当前直线运行的速度</param>
+        /// <param name="ini_maxvel">由上一段直线或者曲线转入当前直线或者曲线时，所允许的最大速度</param>
+        /// <param name="acc">当前直线运行的加速度</param>
+        /// <param name="DIO">需要在当前规划阶段设置的数字量输出，低位对齐。每位对应一个数字量输出</param>
+        /// <param name="AIO">需要在当前规划阶段设置的模拟量输出。控制卡为12位DA输出输出，即4095对应满量程输出</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionAddLineWithSyncIO(IntPtr AsuMotion,
+        AsuMotionAxisData end,
+        double vel,
+        double ini_maxvel,
+        double acc,
+        ushort[] DIO,
+        ushort[] AIO);
+
+        /// <summary>
+        /// 常速运行
+        /// </summary>
+        /// <param name="AsuMotion">AsuMotion资源句柄</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <returns></returns>
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        public static extern AsuMotionError AsuMotionMoveAtConstSpeed(IntPtr AsuMotion, AsuMotionAxisMaskType AxisMask);
+
         /// <summary>   
         /// 开启与AsuMotion的通讯
         /// </summary>

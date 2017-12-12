@@ -184,13 +184,13 @@ namespace TestAsuDll
             int ret = AsuInvoke.Asu_MotionClose(handle);
             if (ret == 0)
             {
-                Print("设备 " + NumOfCurDevice + " 关闭成功");
-                LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭成功");
+                Print("设备 " + NumOfCurDevice + " 关闭 成功");
+                LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭 成功");
             }
             else
             {
-                Print("设备 " + NumOfCurDevice + " 关闭失败");
-                LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭失败");
+                Print("设备 " + NumOfCurDevice + " 关闭 失败");
+                LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭 失败");
             }
         }
 
@@ -608,6 +608,140 @@ namespace TestAsuDll
                 case 1:
                     Print("急停 失败");
                     LogHelper.WriteLog("急停 失败");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AsuMotionMoveAtConstSpeed(object sender, EventArgs e)
+        {
+            int ret = AsuInvoke.Asu_MotionMoveAtConstSpeed(handle, AsuMotionAxisMaskType.AsuMotion_AxisMask_All);
+            switch (ret)
+            {
+                case 0:
+                    Print("常速运行 成功");
+                    LogHelper.WriteLog("常速运行 成功");
+                    break;
+                case 1:
+                    Print("常速运行 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("常速运行 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    break;
+                case 2:
+                    Print("常速运行 失败");
+                    LogHelper.WriteLog("常速运行 失败");
+                    break;
+                case 8:
+                    Print("常速运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    LogHelper.WriteLog("常速运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AsuMotionSetCurrentPostion(object sender, EventArgs e)
+        {
+            int ret = AsuInvoke.Asu_MotionSetCurrentPostion(handle, AsuMotionPos);
+            switch (ret)
+            {
+                case 0:
+                    Print("设置当前坐标 成功");
+                    LogHelper.WriteLog("设置当前坐标 成功");
+                    break;
+                case 1:
+                    Print("设置当前坐标 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("设置当前坐标 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    break;
+                case 2:
+                    Print("设置当前坐标 失败");
+                    LogHelper.WriteLog("设置当前坐标 失败");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AsuMotionAddLine(object sender, EventArgs e)
+        {
+            int ret = AsuInvoke.Asu_MotionAddLine(handle, AsuMotionPos, 200, 5000, 50);
+            switch (ret)
+            {
+                case 0:
+                    Print("添加直线插补规划 成功");
+                    LogHelper.WriteLog("添加直线插补规划 成功");
+                    break;
+                case 1:
+                    Print("添加直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("添加直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    break;
+                case 2:
+                    Print("添加直线插补规划 失败");
+                    LogHelper.WriteLog("添加直线插补规划 失败");
+                    break;
+                case 5:
+                    Print("添加直线插补规划 失败，缓冲区已满");
+                    LogHelper.WriteLog("添加直线插补规划 失败，缓冲区已满");
+                    break;
+                case 6:
+                    Print("添加直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    LogHelper.WriteLog("添加直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AsuMotionAddLineWithSyncIO(object sender, EventArgs e)
+        {
+            ushort[] DIO = new ushort[3];
+            ushort[] AIO = new ushort[3];
+
+            DIO[0] = 0x0202;
+
+            int ret = AsuInvoke.Asu_MotionAddLineWithSyncIO(handle, AsuMotionPos, 200, 5000, 50, DIO, AIO);
+            switch (ret)
+            {
+                case 0:
+                    Print("添加同步IO直线插补规划 成功");
+                    LogHelper.WriteLog("添加同步IO直线插补规划 成功");
+                    break;
+                case 1:
+                    Print("添加同步IO直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    break;
+                case 2:
+                    Print("添加同步IO直线插补规划 失败");
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败");
+                    break;
+                case 5:
+                    Print("添加同步IO直线插补规划 失败，缓冲区已满");
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，缓冲区已满");
+                    break;
+                case 6:
+                    Print("添加同步IO直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AsuMotionGetOutputIO(object sender, EventArgs e)
+        {
+            ushort[] DIO = new ushort[3];
+            DIO[0] = 0x503;
+
+            int ret = AsuInvoke.Asu_MotionGetOutputIO(handle, DIO);
+            switch (ret)
+            {
+                case 0:
+                    Print("输出口状态获取 成功");
+                    LogHelper.WriteLog("输出口状态获取 成功");
+                    break;
+                case 1:
+                    Print("输出口状态获取 失败");
+                    LogHelper.WriteLog("输出口状态获取 失败");
                     break;
                 default:
                     break;

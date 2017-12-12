@@ -17,7 +17,7 @@ namespace AsuDll
 
         private static void InitLog4net()
         {
-            var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
+            var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net_sdk.config");
             XmlConfigurator.ConfigureAndWatch(logCfg);
         }
 
@@ -240,6 +240,36 @@ namespace AsuDll
         }
 
         /// <summary>
+        /// 常速运行
+        /// 返回0 配置成功
+        /// 返回1 参数 handle 为空指针，一般因为没有打开设备导致
+        /// 返回2 配置不成功
+        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">AsuMotion资源句柄</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <returns></returns>
+        public static int Asu_MotionMoveAtConstSpeed(IntPtr handle, AsuMotionAxisMaskType AxisMask)
+        {
+            AsuMotionError ret = AsuMotionMoveAtConstSpeed(handle, AxisMask);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("常速运行 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("常速运行 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("常速运行 失败");
+                    return 2;
+                default:
+                    LogHelper.WriteLog("常速运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
+            }
+        }
+
+        /// <summary>
         /// 停止由运动控制卡规划的所有轴的运动
         /// 成功返回 0
         /// 失败返回 1
@@ -332,6 +362,111 @@ namespace AsuDll
                 default:
                     LogHelper.WriteLog("配置机器坐标 当前运动卡处于 运动 状态");
                     return 1;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 设置当前坐标
+        /// 返回0 配置成功
+        /// 返回2 配置失败
+        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
+        /// </summary>
+        /// <param name="position">期望配置坐标值的位置结构体</param>
+        /// <returns></returns>
+        public static int Asu_MotionSetCurrentPostion(IntPtr handle, AsuMotionAxisData position)
+        {
+            AsuMotionError ret = AsuMotionSetCurrentPostion(handle, ref position);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("设置当前坐标 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("设置当前坐标 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    return 1;
+                default:
+                    LogHelper.WriteLog("设置当前坐标 失败");
+                    return 2; // AsuMotion_Error
+            }
+        }
+
+        /// <summary>
+        /// 添加直线插补规划
+        /// 返回0 配置成功
+        /// 返回2 配置失败
+        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
+        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了
+        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="end">指定当前直线的终点坐标</param>
+        /// <param name="vel">期望直线运动的速度</param>
+        /// <param name="ini_maxvel">最大允许速度</param>
+        /// <param name="acc">加速度</param>
+        public static int Asu_MotionAddLine(IntPtr handle, AsuMotionAxisData end, double vel, double ini_maxvel, double acc)
+        {
+            AsuMotionError ret = AsuMotionAddLine(handle, ref end, vel, ini_maxvel, acc);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加直线插补规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("添加直线插补规划 失败");
+                    return 2;
+                case AsuMotionError.AsuMotion_Buffer_Full:
+                    LogHelper.WriteLog("添加直线插补规划 失败，缓冲区已满");
+                    return 5;
+                default:
+                    LogHelper.WriteLog("添加直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
+            }
+        }
+
+        /// <summary>
+        /// 添加同步IO直线插补规划
+        /// 返回0 配置成功
+        /// 返回2 配置失败
+        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
+        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了
+        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">AsuMotion资源句柄</param>
+        /// <param name="end">指定当前直线的终点坐标</param>
+        /// <param name="vel">指定当前直线运行的速度</param>
+        /// <param name="ini_maxvel">由上一段直线或者曲线转入当前直线或者曲线时，所允许的最大速度</param>
+        /// <param name="acc">当前直线运行的加速度</param>
+        /// <param name="DIO">需要在当前规划阶段设置的数字量输出，低位对齐。每位对应一个数字量输出</param>
+        /// <param name="AIO">需要在当前规划阶段设置的模拟量输出。控制卡为12位DA输出输出，即4095对应满量程输出</param>
+        /// <returns></returns>
+        public static int Asu_MotionAddLineWithSyncIO(IntPtr handle,
+        AsuMotionAxisData end,
+        double vel,
+        double ini_maxvel,
+        double acc,
+        ushort[] DIO,
+        ushort[] AIO)
+        {
+            AsuMotionError ret = AsuMotionAddLineWithSyncIO(handle, end, vel, ini_maxvel, acc, DIO, AIO);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败");
+                    return 2;
+                case AsuMotionError.AsuMotion_Buffer_Full:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，缓冲区已满");
+                    return 5;
+                default:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
+                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
             }
         }
 
@@ -500,6 +635,26 @@ namespace AsuDll
                     return 0;
                 default:
                     LogHelper.WriteLog("急停 失败");
+                    return 1;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 输出口状态获取
+        /// </summary>
+        /// <param name="handle">AsuMotion资源句柄</param>
+        /// <param name="pOutput">IO状态缓冲区，长度至少为2，函数调用成功后，这里面的值将为IO状态</param>
+        /// <returns></returns>
+        public static int Asu_MotionGetOutputIO(IntPtr handle, ushort[] pOutput)
+        {
+            AsuMotionError ret = AsuMotionGetOutputIO(handle, pOutput);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("输出口状态获取 成功");
+                    return 0;
+                default:
+                    LogHelper.WriteLog("输出口状态获取 失败");
                     return 1;  // AsuMotion_False
             }
         }
@@ -763,49 +918,9 @@ namespace AsuDll
             }
         }
 
-        /// <summary>
-        /// 配置当前AsuMotion PC规划运动的工作坐标
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// </summary>
-        /// <param name="position">期望配置坐标值的位置结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetCurrentPostion(IntPtr handle, AsuMotionAxisData position)
-        {
-            AsuMotionError ret = AsuMotionSetCurrentPostion(handle, ref position);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok: return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null: return 1;
-                default: return 2; // AsuMotion_Error
-            }
-        }
 
-        /// <summary>
-        /// 添加直线运动轨迹
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// 返回5 前状态下不能添加PC的规划，因为缓冲区已经满了
-        /// 返回6 前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
-        /// </summary>
-        /// <param name="end">目的终点</param>
-        /// <param name="vel">期望直线运动的速度</param>
-        /// <param name="ini_maxvel">最大允许速度</param>
-        /// <param name="acc">加速度</param>
-        public static int Asu_MotionAddLine(IntPtr handle, AsuMotionAxisData endPosition, double vel, double ini_maxvel, double acc)
-        {
-            AsuMotionError ret = AsuMotionAddLine(handle, ref endPosition, vel, ini_maxvel, acc);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok: return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null: return 1;
-                case AsuMotionError.AsuMotion_Error: return 2;
-                case AsuMotionError.AsuMotion_Buffer_Full: return 5;
-                default: return 6; // AsuMotion_CurrentState_Isnot_PCPlan
-            }
-        }
+
+
 
         /// <summary>
         /// AsuMotion PC规划添加圆弧  由目的终点，圆心，法线确定圆平面
