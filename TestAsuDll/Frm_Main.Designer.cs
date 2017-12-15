@@ -63,6 +63,23 @@
             this.button23 = new System.Windows.Forms.Button();
             this.button24 = new System.Windows.Forms.Button();
             this.button25 = new System.Windows.Forms.Button();
+            this.button26 = new System.Windows.Forms.Button();
+            this.button27 = new System.Windows.Forms.Button();
+            this.button28 = new System.Windows.Forms.Button();
+            this.button29 = new System.Windows.Forms.Button();
+            this.button30 = new System.Windows.Forms.Button();
+            this.button31 = new System.Windows.Forms.Button();
+            this.button32 = new System.Windows.Forms.Button();
+            this.button33 = new System.Windows.Forms.Button();
+            this.button34 = new System.Windows.Forms.Button();
+            this.button35 = new System.Windows.Forms.Button();
+            this.button36 = new System.Windows.Forms.Button();
+            this.button37 = new System.Windows.Forms.Button();
+            this.button38 = new System.Windows.Forms.Button();
+            this.button39 = new System.Windows.Forms.Button();
+            this.button40 = new System.Windows.Forms.Button();
+            this.button41 = new System.Windows.Forms.Button();
+            this.button42 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,7 +107,7 @@
             // 
             this.richTextBox1.Location = new System.Drawing.Point(6, 20);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(359, 439);
+            this.richTextBox1.Size = new System.Drawing.Size(359, 223);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             // 
@@ -147,10 +164,10 @@
             this.groupBox1.Controls.Add(this.richTextBox1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(371, 473);
+            this.groupBox1.Size = new System.Drawing.Size(371, 249);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Log";
+            this.groupBox1.Text = "日志";
             // 
             // button3
             // 
@@ -324,7 +341,7 @@
             // 
             // button18
             // 
-            this.button18.Location = new System.Drawing.Point(663, 171);
+            this.button18.Location = new System.Drawing.Point(848, 21);
             this.button18.Name = "button18";
             this.button18.Size = new System.Drawing.Size(104, 23);
             this.button18.TabIndex = 13;
@@ -334,7 +351,7 @@
             // 
             // button19
             // 
-            this.button19.Location = new System.Drawing.Point(663, 200);
+            this.button19.Location = new System.Drawing.Point(848, 71);
             this.button19.Name = "button19";
             this.button19.Size = new System.Drawing.Size(104, 23);
             this.button19.TabIndex = 13;
@@ -344,7 +361,7 @@
             // 
             // button20
             // 
-            this.button20.Location = new System.Drawing.Point(663, 229);
+            this.button20.Location = new System.Drawing.Point(848, 126);
             this.button20.Name = "button20";
             this.button20.Size = new System.Drawing.Size(104, 23);
             this.button20.TabIndex = 13;
@@ -394,19 +411,206 @@
             // 
             // button25
             // 
-            this.button25.Location = new System.Drawing.Point(707, 374);
+            this.button25.Location = new System.Drawing.Point(296, 297);
             this.button25.Name = "button25";
-            this.button25.Size = new System.Drawing.Size(108, 23);
+            this.button25.Size = new System.Drawing.Size(97, 23);
             this.button25.TabIndex = 16;
             this.button25.Text = "输出口状态获取";
             this.button25.UseVisualStyleBackColor = true;
             this.button25.Click += new System.EventHandler(this.AsuMotionGetOutputIO);
             // 
+            // button26
+            // 
+            this.button26.Location = new System.Drawing.Point(12, 268);
+            this.button26.Name = "button26";
+            this.button26.Size = new System.Drawing.Size(102, 23);
+            this.button26.TabIndex = 17;
+            this.button26.Text = "请求一次回原点";
+            this.button26.UseVisualStyleBackColor = true;
+            this.button26.Click += new System.EventHandler(this.AsuMotionGoHome);
+            // 
+            // button27
+            // 
+            this.button27.Location = new System.Drawing.Point(12, 297);
+            this.button27.Name = "button27";
+            this.button27.Size = new System.Drawing.Size(114, 23);
+            this.button27.TabIndex = 17;
+            this.button27.Text = "添加一次坐标增量";
+            this.button27.UseVisualStyleBackColor = true;
+            this.button27.Click += new System.EventHandler(this.AsuMotionDirectPlanAddMoveIncrease);
+            // 
+            // button28
+            // 
+            this.button28.Location = new System.Drawing.Point(12, 384);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(125, 23);
+            this.button28.TabIndex = 17;
+            this.button28.Text = "放弃当前的运动规划";
+            this.button28.UseVisualStyleBackColor = true;
+            this.button28.Click += new System.EventHandler(this.AsuMotionAbort);
+            // 
+            // button29
+            // 
+            this.button29.Location = new System.Drawing.Point(196, 267);
+            this.button29.Name = "button29";
+            this.button29.Size = new System.Drawing.Size(89, 23);
+            this.button29.TabIndex = 17;
+            this.button29.Text = "绝对位置移动";
+            this.button29.UseVisualStyleBackColor = true;
+            this.button29.Click += new System.EventHandler(this.AsuMotionMoveAbsolute);
+            // 
+            // button30
+            // 
+            this.button30.Location = new System.Drawing.Point(12, 326);
+            this.button30.Name = "button30";
+            this.button30.Size = new System.Drawing.Size(114, 23);
+            this.button30.TabIndex = 17;
+            this.button30.Text = "添加一次IO变化";
+            this.button30.UseVisualStyleBackColor = true;
+            this.button30.Click += new System.EventHandler(this.AsuMotionDirectPlanChangeIO);
+            // 
+            // button31
+            // 
+            this.button31.Location = new System.Drawing.Point(12, 413);
+            this.button31.Name = "button31";
+            this.button31.Size = new System.Drawing.Size(102, 23);
+            this.button31.TabIndex = 17;
+            this.button31.Text = "设置停止类型";
+            this.button31.UseVisualStyleBackColor = true;
+            this.button31.Click += new System.EventHandler(this.AsuMotionSetStopType);
+            // 
+            // button32
+            // 
+            this.button32.Location = new System.Drawing.Point(196, 297);
+            this.button32.Name = "button32";
+            this.button32.Size = new System.Drawing.Size(101, 23);
+            this.button32.TabIndex = 17;
+            this.button32.Text = "输入口状态获取";
+            this.button32.UseVisualStyleBackColor = true;
+            this.button32.Click += new System.EventHandler(this.AsuMotionGetInputIO);
+            // 
+            // button33
+            // 
+            this.button33.Location = new System.Drawing.Point(12, 355);
+            this.button33.Name = "button33";
+            this.button33.Size = new System.Drawing.Size(181, 23);
+            this.button33.TabIndex = 17;
+            this.button33.Text = "将缓冲区中添加的直接规划刷新";
+            this.button33.UseVisualStyleBackColor = true;
+            this.button33.Click += new System.EventHandler(this.AsuMotionDirectPlanFlush);
+            // 
+            // button34
+            // 
+            this.button34.Location = new System.Drawing.Point(12, 471);
+            this.button34.Name = "button34";
+            this.button34.Size = new System.Drawing.Size(162, 23);
+            this.button34.TabIndex = 17;
+            this.button34.Text = "添加同步IO空间圆弧插补规划";
+            this.button34.UseVisualStyleBackColor = true;
+            this.button34.Click += new System.EventHandler(this.AsuMotionAddCircleWithSyncIO);
+            // 
+            // button35
+            // 
+            this.button35.Location = new System.Drawing.Point(196, 326);
+            this.button35.Name = "button35";
+            this.button35.Size = new System.Drawing.Size(162, 23);
+            this.button35.TabIndex = 17;
+            this.button35.Text = "当前各坐标轴最大速度获取";
+            this.button35.UseVisualStyleBackColor = true;
+            this.button35.Click += new System.EventHandler(this.AsuMotionGetMaxSpeed);
+            // 
+            // button36
+            // 
+            this.button36.Location = new System.Drawing.Point(196, 355);
+            this.button36.Name = "button36";
+            this.button36.Size = new System.Drawing.Size(89, 23);
+            this.button36.TabIndex = 17;
+            this.button36.Text = "光滑系数获取";
+            this.button36.UseVisualStyleBackColor = true;
+            this.button36.Click += new System.EventHandler(this.AsuMotionGetSmoothCoff);
+            // 
+            // button37
+            // 
+            this.button37.Location = new System.Drawing.Point(12, 442);
+            this.button37.Name = "button37";
+            this.button37.Size = new System.Drawing.Size(133, 23);
+            this.button37.TabIndex = 17;
+            this.button37.Text = "添加空间圆弧插补规划";
+            this.button37.UseVisualStyleBackColor = true;
+            this.button37.Click += new System.EventHandler(this.AsuMotionAddCircle);
+            // 
+            // button38
+            // 
+            this.button38.Location = new System.Drawing.Point(196, 384);
+            this.button38.Name = "button38";
+            this.button38.Size = new System.Drawing.Size(126, 23);
+            this.button38.TabIndex = 17;
+            this.button38.Text = "单位距离脉冲数获取";
+            this.button38.UseVisualStyleBackColor = true;
+            this.button38.Click += new System.EventHandler(this.AsuMotionGetStepsPerUnit);
+            // 
+            // button39
+            // 
+            this.button39.Location = new System.Drawing.Point(625, 345);
+            this.button39.Name = "button39";
+            this.button39.Size = new System.Drawing.Size(225, 23);
+            this.button39.TabIndex = 17;
+            this.button39.Text = "停止由运动控制卡规划的特定轴的运动";
+            this.button39.UseVisualStyleBackColor = true;
+            this.button39.Click += new System.EventHandler(this.AsuMotionCardPlanStop);
+            // 
+            // button40
+            // 
+            this.button40.Location = new System.Drawing.Point(196, 413);
+            this.button40.Name = "button40";
+            this.button40.Size = new System.Drawing.Size(162, 23);
+            this.button40.TabIndex = 17;
+            this.button40.Text = "配置运动卡数字量输入功能";
+            this.button40.UseVisualStyleBackColor = true;
+            this.button40.Click += new System.EventHandler(this.AsuMotionSetInputIOEngineDir);
+            // 
+            // button41
+            // 
+            this.button41.Location = new System.Drawing.Point(171, 442);
+            this.button41.Name = "button41";
+            this.button41.Size = new System.Drawing.Size(206, 23);
+            this.button41.TabIndex = 17;
+            this.button41.Text = "配置运动卡模拟量输出和数字量输出";
+            this.button41.UseVisualStyleBackColor = true;
+            this.button41.Click += new System.EventHandler(this.AsuMotionSetOutput);
+            // 
+            // button42
+            // 
+            this.button42.Location = new System.Drawing.Point(196, 471);
+            this.button42.Name = "button42";
+            this.button42.Size = new System.Drawing.Size(133, 23);
+            this.button42.TabIndex = 17;
+            this.button42.Text = "配置回原点的管脚";
+            this.button42.UseVisualStyleBackColor = true;
+            this.button42.Click += new System.EventHandler(this.AsuMotionSetHomingSignal);
+            // 
             // Frm_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(898, 497);
+            this.ClientSize = new System.Drawing.Size(964, 497);
+            this.Controls.Add(this.button37);
+            this.Controls.Add(this.button42);
+            this.Controls.Add(this.button41);
+            this.Controls.Add(this.button40);
+            this.Controls.Add(this.button39);
+            this.Controls.Add(this.button38);
+            this.Controls.Add(this.button36);
+            this.Controls.Add(this.button35);
+            this.Controls.Add(this.button34);
+            this.Controls.Add(this.button33);
+            this.Controls.Add(this.button32);
+            this.Controls.Add(this.button31);
+            this.Controls.Add(this.button30);
+            this.Controls.Add(this.button29);
+            this.Controls.Add(this.button28);
+            this.Controls.Add(this.button27);
+            this.Controls.Add(this.button26);
             this.Controls.Add(this.button25);
             this.Controls.Add(this.button24);
             this.Controls.Add(this.button23);
@@ -485,6 +689,23 @@
         private System.Windows.Forms.Button button23;
         private System.Windows.Forms.Button button24;
         private System.Windows.Forms.Button button25;
+        private System.Windows.Forms.Button button26;
+        private System.Windows.Forms.Button button27;
+        private System.Windows.Forms.Button button28;
+        private System.Windows.Forms.Button button29;
+        private System.Windows.Forms.Button button30;
+        private System.Windows.Forms.Button button31;
+        private System.Windows.Forms.Button button32;
+        private System.Windows.Forms.Button button33;
+        private System.Windows.Forms.Button button34;
+        private System.Windows.Forms.Button button35;
+        private System.Windows.Forms.Button button36;
+        private System.Windows.Forms.Button button37;
+        private System.Windows.Forms.Button button38;
+        private System.Windows.Forms.Button button39;
+        private System.Windows.Forms.Button button40;
+        private System.Windows.Forms.Button button41;
+        private System.Windows.Forms.Button button42;
     }
 }
 

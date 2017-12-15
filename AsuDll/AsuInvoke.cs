@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using log4net.Config;
 using static AsuDll.AsuSdkHelper;
@@ -10,44 +8,61 @@ namespace AsuDll
 {
     public class AsuInvoke
     {
-        private static bool IsInitLog4net = false; // Log4net是否已初始化
+        /// <summary>
+        /// 静态构造函数，只在调用此类的成员或属性时 执行一次
+        /// 用于初始化 Log4net
+        /// </summary>
+        static AsuInvoke()
+        {
+            InitLog4net();
+        }
+
         private static int NumOfCurDevice = 0; // 当前设备序号
 
-        #region 初始化 Log4net
+        #region 初始化Log4net 及 获取错误信息
 
+        /// <summary>
+        /// 初始化 Log4net
+        /// </summary>
         private static void InitLog4net()
         {
             var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net_sdk.config");
             XmlConfigurator.ConfigureAndWatch(logCfg);
         }
 
+        /// <summary>
+        /// 获取错误信息
+        /// </summary>
+        /// <param name="errorCode">错误码</param>
+        /// <returns></returns>
+        public static string AsuMotion_GetErrorMessage(int errorCode)
+        {
+            return AsuMotionGetErrorMessage((AsuMotionError)errorCode);
+        }
+
         #endregion
 
-        #region 已确定的功能
+        #region 接口列表
+
+        #region AsuMotion控制卡设备操作函数
 
         /// <summary>
         /// 获取设备数量，一般最先调用
         /// 返回 与PC相连的设备总数
         /// </summary>
-        /// <returns>与PC相连的设备总数</returns>
+        /// <returns></returns>
         public static int Asu_GetDeviceNum()
         {
-            if (IsInitLog4net == false)
-            {
-                InitLog4net();
-                IsInitLog4net = true;
-            }
+            int count = GetDeviceNum();
+            LogHelper.WriteLog("有 " + count + " 台设备连接");
 
-            int result = GetDeviceNum();
-            LogHelper.WriteLog("有 " + result + " 台设备连接");
-
-            return result;
+            return count;
         }
 
         /// <summary>
         /// 获取设备序列号信息
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
         /// <param name="numberOfDevice">设备序号，从 1 开始</param>
         /// <param name="serialOfDevice">用于存储序列号的字节数组</param>
@@ -60,320 +75,176 @@ namespace AsuDll
             {
                 case AsuMotionError.AsuMotion_True:
                     LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息成功，序列号为：" + Encoding.UTF8.GetString(serialOfDevice));
-                    return 0;
+                    return 3;
                 default:
-                    LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息失败");
-                    return 1;  // AsuMotion_False
+                    LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息失败" + "---" +AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         /// <summary>
         /// 打开设备
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 返回有效的设备句柄 成功；
+        /// 返回空指针 失败
         /// </summary>
         /// <param name="numberOfDevice">设备序号，从1开始</param>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
-        public static int Asu_MotionOpen(int numberOfDevice, out IntPtr handle)
+        public static IntPtr AsuMotion_Open(int numberOfDevice)
         {
-            handle = AsuMotionOpen(numberOfDevice - 1);
+            IntPtr handle = AsuMotionOpen(numberOfDevice - 1);
             if (handle != IntPtr.Zero)
             {
                 LogHelper.WriteLog("打开设备 " + numberOfDevice + " 成功");
-                return 0;
+                return handle;
             }
             else
             {
                 LogHelper.WriteLog("打开设备 " + numberOfDevice + " 失败");
-                return 1;
+                return IntPtr.Zero;
             }
         }
 
         /// <summary>
-        /// 设备初始化为默认
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 关闭设备
+        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回：
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
-        public static int Asu_MotionConfigDeviceDefault(IntPtr handle)
+        public static int AsuMotion_Close(IntPtr handle)
+        {
+            AsuMotionError ret = AsuMotionClose(handle);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+
+        /// <summary>
+        /// 设备初始化为默认
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <returns></returns>
+        public static int AsuMotion_ConfigDeviceDefault(IntPtr handle)
         {
             AsuMotionError ret = AsuMotionConfigDeviceDefault(handle);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
                     LogHelper.WriteLog("设备 " + NumOfCurDevice + " 初始化为默认成功");
-                    return 0;
+                    return 3;
                 default:
-                    LogHelper.WriteLog("设备 " + NumOfCurDevice + " 初始化为默认失败");
-                    return 1;  // AsuMotion_False
+                    LogHelper.WriteLog("设备 " + NumOfCurDevice + " 初始化为默认失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
+        #endregion
+
+        #region 直接控制规划相关函数
 
         /// <summary>
-        /// 配置光滑系数和脉冲延时
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 添加一次坐标增量
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前缓冲区满，等待一会再添加
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="DelayBetweenPulseAndDir">脉冲的有效沿和方向的有效沿之间有充分的时间差</param>
-        /// <param name="SmoothCoff">光滑系数</param>
+        /// <param name="inc">一个指向AsuMotionDirectMoveInc的指针，此指针指向的对象包含需要设置的坐标增量。此增量为要设置的脉冲数和分频系数的乘积</param>
         /// <returns></returns>
-        public static int Asu_MotionSetSmoothCoff(IntPtr handle, ushort DelayBetweenPulseAndDir, int SmoothCoff)
+        public static int AsuMotion_DirectPlanAddMoveIncrease(IntPtr handle, ref AsuMotionDirectMoveInc inc)
         {
-            AsuMotionError ret = AsuMotionSetSmoothCoff(handle, DelayBetweenPulseAndDir, SmoothCoff);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置光滑系数和脉冲延时 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置光滑系数和脉冲延时 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        ///  <summary>
-        /// 配置单位脉冲数
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="SmoothCoff">单位脉冲数</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetStepsPerUnit(IntPtr handle, AsuMotionAxisDataInt StepsPerUnit)
-        {
-            AsuMotionError ret = AsuMotionSetStepsPerUnit(handle, StepsPerUnit);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置单位脉冲数 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置单位脉冲数 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-
-        public static int Asu_MotionSetWorkOffset(IntPtr handle, AsuMotionAxisDataInt WorkOffset)
-        {
-            AsuMotionError ret = AsuMotionSetWorkOffset(handle, WorkOffset);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置工作偏移 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置工作偏移 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 配置运动卡差分输出的信号映射
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="FunSel">映射号数组，共16个元素，其值得设定将反应16个差分输出的内容</param>
-        /// <param name="NegMask">设定16个差分输出口是否反向输出</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetDifferentialOutputMapping(IntPtr handle, byte[] FunSel, AsuMotionBitMaskType NegMask)
-        {
-            AsuMotionError ret = AsuMotionSetDifferentialOutputMapping(handle, FunSel, NegMask);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置运动卡差分输出的信号映射 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置运动卡差分输出的信号映射 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 配置运动卡规划运动的加速度
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="Acceleration">一个存储各轴加速度的结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetAccelaration(IntPtr handle, AsuMotionAxisData Acceleration)
-        {
-            AsuMotionError ret = AsuMotionSetAccelaration(handle, Acceleration);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置运动卡规划运动的加速度 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置运动卡规划运动的加速度 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 配置运动卡规划运动的最大速度
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="MaxSpeed">一个存储各轴速度的结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetMaxSpeed(IntPtr handle, AsuMotionAxisData MaxSpeed)
-        {
-            AsuMotionError ret = AsuMotionSetMaxSpeed(handle, MaxSpeed);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置运动卡规划运动的最大速度 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置运动卡规划运动的最大速度 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 常速运行
-        /// 返回0 配置成功
-        /// 返回1 参数 handle 为空指针，一般因为没有打开设备导致
-        /// 返回2 配置不成功
-        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
-        /// </summary>
-        /// <param name="handle">AsuMotion资源句柄</param>
-        /// <param name="AxisMask">配置当前需要运行的轴</param>
-        /// <returns></returns>
-        public static int Asu_MotionMoveAtConstSpeed(IntPtr handle, AsuMotionAxisMaskType AxisMask)
-        {
-            AsuMotionError ret = AsuMotionMoveAtConstSpeed(handle, AxisMask);
+            AsuMotionError ret = AsuMotionDirectPlanAddMoveIncrease(handle, ref inc);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_Error_Ok:
-                    LogHelper.WriteLog("常速运行 成功");
+                    LogHelper.WriteLog("添加一次坐标增量 成功");
                     return 0;
                 case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("常速运行 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("添加一次坐标增量 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
                     return 1;
-                case AsuMotionError.AsuMotion_Error:
-                    LogHelper.WriteLog("常速运行 失败");
-                    return 2;
                 default:
-                    LogHelper.WriteLog("常速运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
-                    return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
+                    LogHelper.WriteLog("添加一次坐标增量 失败，当前缓冲区满，等待一会再添加" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;  // AsuMotion_Buffer_Full
             }
         }
 
         /// <summary>
-        /// 停止由运动控制卡规划的所有轴的运动
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 添加一次IO变化
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前缓冲区满，等待一会再添加
         /// </summary>
         /// <param name="handle">设备句柄</param>
+        /// <param name="DIO">需要在当前直接规划阶段设置的数字量输出，低位对齐。每位对应一个数字量输出</param>
+        /// <param name="AIO">需要在当前直接规划阶段设置的模拟量输出。控制卡为12位DA输出，即4095对应满量程输出</param>
         /// <returns></returns>
-        public static int Asu_MotionStopAll(IntPtr handle)
+        public static int AsuMotion_DirectPlanChangeIO(IntPtr handle, ushort[] DIO, ushort[] AIO)
         {
-            AsuMotionError ret = AsuMotionCardPlanStopAll(handle);
+            AsuMotionError ret = AsuMotionDirectPlanChangeIO(handle, DIO, AIO);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("停止由运动控制卡规划的所有轴的运动 成功");
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加一次IO变化 成功");
                     return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加一次IO变化 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
                 default:
-                    LogHelper.WriteLog("停止由运动控制卡规划的所有轴的运动 失败");
-                    return 1;  // AsuMotion_False
+                    LogHelper.WriteLog("添加一次IO变化 失败，当前缓冲区满，等待一会再添加" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;  // AsuMotion_Buffer_Full
             }
         }
 
         /// <summary>
-        /// 查询当前运动卡是否处于运动状态中
-        /// 空闲返回 0
-        /// 运动返回 1
+        /// 将缓冲区中添加的直接规划刷新
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前缓冲区满，等待一会再添加
         /// </summary>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
-        public static int Asu_MotionIsDone(IntPtr handle)
+        public static int AsuMotion_DirectPlanFlush(IntPtr handle)
         {
-            try
-            {
-                AsuMotionError ret = AsuMotionIsDone(handle);
-                switch (ret)
-                {
-                    case AsuMotionError.AsuMotion_True:
-                        LogHelper.WriteLog("当前运动卡处于 空闲 状态");
-                        return 0;
-                    default:
-                        LogHelper.WriteLog("当前运动卡处于 运动 状态");
-                        return 1;  // AsuMotion_False
-                }
-            }
-            catch (Exception e)
-            {
-                LogHelper.WriteLog("执行 AsuMotionIsDone 异常：" + e.Message);
-                return -1;
-            }            
-        }
-
-        /// <summary>
-        /// 当前机器坐标位置脉冲数获取
-        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="Steps">一个存储各轴脉冲数的结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionGetSteps(IntPtr handle, out AsuMotionAxisDataInt Steps)
-        {
-            AsuMotionError ret = AsuMotionGetSteps(handle, out Steps);
+            AsuMotionError ret = AsuMotionDirectPlanFlush(handle);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("当前机器坐标位置脉冲数获取 成功");
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("将缓冲区中添加的直接规划刷新 成功");
                     return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("将缓冲区中添加的直接规划刷新 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
                 default:
-                    LogHelper.WriteLog("当前机器坐标位置脉冲数获取 失败");
-                    return 1;  // AsuMotion_False
+                    LogHelper.WriteLog("将缓冲区中添加的直接规划刷新 失败，当前缓冲区满，等待一会再添加" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;  // AsuMotion_Buffer_Full
             }
         }
 
-        /// <summary>
-        /// 配置机器坐标
-        /// 返回0 当前运动卡处于空闲状态
-        /// 返回1 当前运动卡处于运动状态
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="AxisMask">配置当前需要运行的轴</param>
-        /// <param name="Position">一个存储各轴机器坐标的结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetMachineCoordinate(IntPtr handle, AsuMotionAxisMaskType AxisMask, AsuMotionAxisData Position)
-        {
-            AsuMotionError ret = AsuMotionSetMachineCoordinate(handle, AxisMask, Position);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置机器坐标 当前运动卡处于 空闲 状态");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置机器坐标 当前运动卡处于 运动 状态");
-                    return 1;  // AsuMotion_False
-            }
-        }
+        #endregion
+
+        #region PC运动规划相关函数
 
         /// <summary>
         /// 设置当前坐标
-        /// 返回0 配置成功
-        /// 返回2 配置失败
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
         /// </summary>
-        /// <param name="position">期望配置坐标值的位置结构体</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="position">一个指向AsuMotionAxisData的指针，此指针指向的对象包含需要设置的当前坐标</param>
         /// <returns></returns>
-        public static int Asu_MotionSetCurrentPostion(IntPtr handle, AsuMotionAxisData position)
+        public static int AsuMotion_SetCurrentPostion(IntPtr handle, ref AsuMotionAxisData position)
         {
             AsuMotionError ret = AsuMotionSetCurrentPostion(handle, ref position);
             switch (ret)
@@ -382,201 +253,23 @@ namespace AsuDll
                     LogHelper.WriteLog("设置当前坐标 成功");
                     return 0;
                 case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("设置当前坐标 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("设置当前坐标 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
                     return 1;
                 default:
-                    LogHelper.WriteLog("设置当前坐标 失败");
+                    LogHelper.WriteLog("设置当前坐标 失败" + "---" + AsuMotion_GetErrorMessage(2));
                     return 2; // AsuMotion_Error
             }
         }
 
         /// <summary>
-        /// 添加直线插补规划
-        /// 返回0 配置成功
-        /// 返回2 配置失败
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了
-        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
-        /// </summary>
-        /// <param name="end">指定当前直线的终点坐标</param>
-        /// <param name="vel">期望直线运动的速度</param>
-        /// <param name="ini_maxvel">最大允许速度</param>
-        /// <param name="acc">加速度</param>
-        public static int Asu_MotionAddLine(IntPtr handle, AsuMotionAxisData end, double vel, double ini_maxvel, double acc)
-        {
-            AsuMotionError ret = AsuMotionAddLine(handle, ref end, vel, ini_maxvel, acc);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok:
-                    LogHelper.WriteLog("添加直线插补规划 成功");
-                    return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("添加直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
-                    return 1;
-                case AsuMotionError.AsuMotion_Error:
-                    LogHelper.WriteLog("添加直线插补规划 失败");
-                    return 2;
-                case AsuMotionError.AsuMotion_Buffer_Full:
-                    LogHelper.WriteLog("添加直线插补规划 失败，缓冲区已满");
-                    return 5;
-                default:
-                    LogHelper.WriteLog("添加直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
-                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
-            }
-        }
-
-        /// <summary>
-        /// 添加同步IO直线插补规划
-        /// 返回0 配置成功
-        /// 返回2 配置失败
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了
-        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
-        /// </summary>
-        /// <param name="handle">AsuMotion资源句柄</param>
-        /// <param name="end">指定当前直线的终点坐标</param>
-        /// <param name="vel">指定当前直线运行的速度</param>
-        /// <param name="ini_maxvel">由上一段直线或者曲线转入当前直线或者曲线时，所允许的最大速度</param>
-        /// <param name="acc">当前直线运行的加速度</param>
-        /// <param name="DIO">需要在当前规划阶段设置的数字量输出，低位对齐。每位对应一个数字量输出</param>
-        /// <param name="AIO">需要在当前规划阶段设置的模拟量输出。控制卡为12位DA输出输出，即4095对应满量程输出</param>
-        /// <returns></returns>
-        public static int Asu_MotionAddLineWithSyncIO(IntPtr handle,
-        AsuMotionAxisData end,
-        double vel,
-        double ini_maxvel,
-        double acc,
-        ushort[] DIO,
-        ushort[] AIO)
-        {
-            AsuMotionError ret = AsuMotionAddLineWithSyncIO(handle, end, vel, ini_maxvel, acc, DIO, AIO);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok:
-                    LogHelper.WriteLog("添加同步IO直线插补规划 成功");
-                    return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致");
-                    return 1;
-                case AsuMotionError.AsuMotion_Error:
-                    LogHelper.WriteLog("添加同步IO直线插补规划 失败");
-                    return 2;
-                case AsuMotionError.AsuMotion_Buffer_Full:
-                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，缓冲区已满");
-                    return 5;
-                default:
-                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
-                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
-            }
-        }
-
-        /// <summary>
-        /// 配置正向软限位
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="SoftPositiveLimit">正向软限位坐标的结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetSoftPositiveLimit(IntPtr handle, AsuMotionAxisData SoftPositiveLimit)
-        {
-            AsuMotionError ret = AsuMotionSetSoftPositiveLimit(handle, SoftPositiveLimit);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置正向软限位 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置正向软限位 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 配置反向软限位
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <param name="SoftNegtiveLimit">反向软限位坐标的结构体</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetSoftNegtiveLimit(IntPtr handle, AsuMotionAxisData SoftNegtiveLimit)
-        {
-            AsuMotionError ret = AsuMotionSetSoftPositiveLimit(handle, SoftNegtiveLimit);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("配置反向软限位 成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("配置反向软限位 失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        ///  关闭设备
-        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 暂停当前运动
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
         /// </summary>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
-        public static int Asu_MotionClose(IntPtr handle)
-        {
-            AsuMotionError ret = AsuMotionClose(handle);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭成功");
-                    return 0;
-                default:
-                    LogHelper.WriteLog("设备 " + NumOfCurDevice + " 关闭失败");
-                    return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 点动运行，需要调用Stop停止
-        /// 返回0 配置成功
-        /// 返回1 参数 handle 为空指针，一般因为没有打开设备导致
-        /// 返回2 配置不成功
-        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
-        /// </summary>
-        /// <param name="AsuMotion">AsuMotion资源句柄</param>
-        /// <param name="Axis">配置当前需要运行的轴</param>
-        /// <param name="PositionGiven">给定一个点动运行时，机器的目标位置。此位置为相对位置</param>
-        /// <returns></returns>
-        public static int Asu_MotionJogOn(IntPtr handle, AsuMotionAxisIndexType Axis, double PositionGiven)
-        {
-            AsuMotionError ret = AsuMotionJogOn(handle, Axis, PositionGiven);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok:
-                    LogHelper.WriteLog("X 轴正向点动运行 成功");
-                    return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("X 轴正向点动运行 失败，设备句柄为空指针，一般因为没有打开设备导致");
-                    return 1;
-                case AsuMotionError.AsuMotion_Error:
-                    LogHelper.WriteLog("X 轴正向点动运行 失败");
-                    return 2;
-                default:
-                    LogHelper.WriteLog("X 轴正向点动运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成");
-                    return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
-            }
-        }
-
-
-        /// <summary>
-        /// 暂停当前运动，可由AsuMotionResume恢复运动状态
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// </summary>
-        /// <param name="handle">设备句柄</param>
-        /// <returns></returns>
-        public static int Asu_MotionPause(IntPtr handle)
+        public static int AsuMotion_Pause(IntPtr handle)
         {
             AsuMotionError ret = AsuMotionPause(handle);
             switch (ret)
@@ -585,23 +278,23 @@ namespace AsuDll
                     LogHelper.WriteLog("暂停当前运动 成功");
                     return 0;
                 case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("暂停当前运动 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("暂停当前运动 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
                     return 1;
                 default:
-                    LogHelper.WriteLog("暂停当前运动 失败");
+                    LogHelper.WriteLog("暂停当前运动 失败" + "---" + AsuMotion_GetErrorMessage(2));
                     return 2; // AsuMotion_Error
             }
         }
 
         /// <summary>
         /// 恢复暂停的运动
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
+        /// 返回0 配置成功；
+        /// 返回2 配置失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
         /// </summary>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
-        public static int Asu_MotionResume(IntPtr handle)
+        public static int AsuMotion_Resume(IntPtr handle)
         {
             AsuMotionError ret = AsuMotionResume(handle);
             switch (ret)
@@ -610,67 +303,708 @@ namespace AsuDll
                     LogHelper.WriteLog("恢复暂停的运动 成功");
                     return 0;
                 case AsuMotionError.AsuMotion_Device_Is_Null:
-                    LogHelper.WriteLog("恢复暂停的运动 失败，设备句柄为空指针，一般因为没有打开设备导致");
+                    LogHelper.WriteLog("恢复暂停的运动 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
                     return 1;
                 default:
-                    LogHelper.WriteLog("恢复暂停的运动 失败");
+                    LogHelper.WriteLog("恢复暂停的运动 失败" + "---" + AsuMotion_GetErrorMessage(2));
                     return 2; // AsuMotion_Error
             }
         }
 
         /// <summary>
-        /// 急停
-        /// 成功返回 0
-        /// 设备返回 1
+        /// 放弃当前的运动规划
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
         /// </summary>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
-        public static int Asu_MotionEStop(IntPtr handle)
+        public static int Asu_MotionAbort(IntPtr handle)
+        {
+            AsuMotionError ret = AsuMotionAbort(handle);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("放弃当前的运动规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("放弃当前的运动规划 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                default:
+                    LogHelper.WriteLog("放弃当前的运动规划 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2; // AsuMotion_Error
+            }
+        }
+
+        /// <summary>
+        /// 设置停止类型
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="type">停止类型</param>
+        /// <param name="tolerance">指定停止时所能容忍的误差</param>
+        /// <returns></returns>
+        public static int Asu_MotionSetStopType(IntPtr handle, AsuMotionStopType type, double tolerance)
+        {
+            AsuMotionError ret = AsuMotionSetStopType(handle, type, tolerance);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("设置停止类型 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("设置停止类型 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                default:
+                    LogHelper.WriteLog("设置停止类型 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2; // AsuMotion_Error
+            }
+        }
+
+        /// <summary>
+        /// 添加直线插补规划
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了；
+        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="end">指定当前直线的终点坐标</param>
+        /// <param name="vel">期望直线运动的速度</param>
+        /// <param name="ini_maxvel">最大允许速度</param>
+        /// <param name="acc">加速度</param>
+        public static int AsuMotion_AddLine(IntPtr handle, ref AsuMotionAxisData end, double vel, double ini_maxvel, double acc)
+        {
+            AsuMotionError ret = AsuMotionAddLine(handle, ref end, vel, ini_maxvel, acc);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加直线插补规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("添加直线插补规划 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                case AsuMotionError.AsuMotion_Buffer_Full:
+                    LogHelper.WriteLog("添加直线插补规划 失败，缓冲区已满" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;
+                default:
+                    LogHelper.WriteLog("添加直线插补规划 失败，当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(6));
+                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
+            }
+        }
+
+        /// <summary>
+        /// 添加空间圆弧插补规划
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了；
+        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="end">指定当前圆弧插补的终点坐标</param>
+        /// <param name="center">指定当前圆弧插补定义的球坐标系原点</param>
+        /// <param name="normal">法线终点，起点为原点(0，0，0)</param>
+        /// <param name="turn">指定当前圆弧插补的圈数</param>
+        /// <param name="vel">指定当前圆弧运行的速度</param>
+        /// <param name="ini_maxvel">由上一段直线或者曲线转入当前圆弧曲线时，所允许的最大速度</param>
+        /// <param name="acc">当前圆弧运行的加速度</param>
+        public static int Asu_MotionAddCircle(IntPtr handle,
+            ref AsuMotionAxisData end,
+            ref AsuMotionCartesian center,
+            ref AsuMotionCartesian normal,
+            int turn,
+            double vel,
+            double ini_maxvel,
+            double acc)
+        {
+            AsuMotionError ret = AsuMotionAddCircle(handle, ref end, ref center, ref normal, turn, vel, ini_maxvel, acc);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加空间圆弧插补规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加空间圆弧插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("添加空间圆弧插补规划 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                case AsuMotionError.AsuMotion_Buffer_Full:
+                    LogHelper.WriteLog("添加空间圆弧插补规划 失败，缓冲区已满" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;
+                default:
+                    LogHelper.WriteLog("添加空间圆弧插补规划 失败，当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(6));
+                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
+            }
+        }
+
+        /// <summary>
+        /// 添加同步IO直线插补规划。
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了；
+        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="end">指定当前直线的终点坐标</param>
+        /// <param name="vel">指定当前直线运行的速度</param>
+        /// <param name="ini_maxvel">由上一段直线或者曲线转入当前直线或者曲线时，所允许的最大速度</param>
+        /// <param name="acc">当前直线运行的加速度</param>
+        /// <param name="DIO">需要在当前规划阶段设置的数字量输出，低位对齐。每位对应一个数字量输出</param>
+        /// <param name="AIO">需要在当前规划阶段设置的模拟量输出。控制卡为12位DA输出输出，即4095对应满量程输出</param>
+        /// <returns></returns>
+        public static int AsuMotion_AddLineWithSyncIO(IntPtr handle,
+        ref AsuMotionAxisData end,
+        double vel,
+        double ini_maxvel,
+        double acc,
+        ushort[] DIO,
+        ushort[] AIO)
+        {
+            AsuMotionError ret = AsuMotionAddLineWithSyncIO(handle, ref end, vel, ini_maxvel, acc, DIO, AIO);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                case AsuMotionError.AsuMotion_Buffer_Full:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，缓冲区已满" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;
+                default:
+                    LogHelper.WriteLog("添加同步IO直线插补规划 失败，当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(6));
+                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
+            }
+        }
+
+        /// <summary>
+        /// 添加同步IO空间圆弧插补规划
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回5 当前状态下不能添加PC的规划，因为缓冲区已经满了；
+        /// 返回6 当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="end">指定当前圆弧插补的终点坐标</param>
+        /// <param name="center">指定当前圆弧插补定义的球坐标系原点</param>
+        /// <param name="normal">法线终点，起点为原点(0，0，0)</param>
+        /// <param name="turn">指定当前圆弧插补的圈数</param>
+        /// <param name="vel">指定当前圆弧运行的速度</param>
+        /// <param name="ini_maxvel">由上一段直线或者曲线转入当前圆弧曲线时，所允许的最大速度</param>
+        /// <param name="acc">当前圆弧运行的加速度</param>
+        /// <param name="DIO">需要在当前规划阶段设置的数字量输出，低位对齐。每位对应一个数字量输出</param>
+        /// <param name="AIO">需要在当前规划阶段设置的模拟量输出。控制卡为12位DA输出，即4095对应满量程输出</param>
+        /// <returns></returns>
+        public static int AsuMotion_AddCircleWithSyncIO(IntPtr handle,
+            ref AsuMotionAxisData end,
+            ref AsuMotionCartesian center,
+            ref AsuMotionCartesian normal,
+            int turn,
+            double vel,
+            double ini_maxvel,
+            double acc,
+            ushort[] DIO,
+            ushort[] AIO
+        )
+        {
+            AsuMotionError ret = AsuMotionAddCircleWithSyncIO(handle, ref end, ref center, ref normal, turn, vel, ini_maxvel, acc, DIO, AIO);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("添加同步IO空间圆弧插补规划 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("添加同步IO空间圆弧插补规划 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("添加同步IO空间圆弧插补规划 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                case AsuMotionError.AsuMotion_Buffer_Full:
+                    LogHelper.WriteLog("添加同步IO空间圆弧插补规划 失败，缓冲区已满" + "---" + AsuMotion_GetErrorMessage(5));
+                    return 5;
+                default:
+                    LogHelper.WriteLog("添加同步IO空间圆弧插补规划 失败，当前状态下不能进行PC的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(6));
+                    return 6; // AsuMotion_CurrentState_Isnot_PCPlan
+            }
+        }
+
+        #endregion
+
+        #region 运动控制卡规划相关的函数
+
+        /// <summary>
+        /// 常速运行
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回2 失败；
+        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <returns></returns>
+        public static int AsuMotion_MoveAtConstSpeed(IntPtr handle, AsuMotionAxisMaskType AxisMask)
+        {
+            AsuMotionError ret = AsuMotionMoveAtConstSpeed(handle, AxisMask);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("常速运行 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("常速运行 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("常速运行 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                default:
+                    LogHelper.WriteLog("常速运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(8));
+                    return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
+            }
+        }
+
+        /// <summary>
+        /// 点动运行
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回2 失败；
+        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="AsuMotion">设备句柄</param>
+        /// <param name="Axis">配置当前需要运行的轴</param>
+        /// <param name="PositionGiven">给定一个点动运行时，机器的目标位置。此位置为相对位置</param>
+        /// <returns></returns>
+        public static int AsuMotion_JogOn(IntPtr handle, AsuMotionAxisIndexType Axis, double PositionGiven)
+        {
+            AsuMotionError ret = AsuMotionJogOn(handle, Axis, PositionGiven);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("点动运行 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("点动运行 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("点动运行 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                default:
+                    LogHelper.WriteLog("点动运行 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(8));
+                    return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
+            }
+        }
+
+        /// <summary>
+        /// 绝对位置移动
+        /// 返回0 成功；
+        /// 返回2 失败；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <param name="PositionGiven">给定一个点动运行时，机器的目标位置</param>
+        /// <returns></returns>
+        public static int AsuMotion_MoveAbsolute(IntPtr handle, AsuMotionAxisMaskType AxisMask, ref AsuMotionAxisData PositionGiven)
+        {
+            AsuMotionError ret = AsuMotionMoveAbsolute(handle, AxisMask, ref PositionGiven);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("绝对位置移动 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("绝对位置移动 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                case AsuMotionError.AsuMotion_Error:
+                    LogHelper.WriteLog("绝对位置移动 失败" + "---" + AsuMotion_GetErrorMessage(2));
+                    return 2;
+                default:
+                    LogHelper.WriteLog("绝对位置移动 失败，当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(8));
+                    return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
+            }
+        }
+
+        #endregion
+
+        #region 运动控制卡状态获取相关的函数
+
+        /// <summary>
+        /// 输入口状态获取
+        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回：
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="Input">用于存储输入信号值的存储区域</param>
+        /// <returns></returns>
+        public static int AsuMotion_GetInputIO(IntPtr handle, out ushort[] Input)
+        {
+            AsuMotionError ret = AsuMotionGetInputIO(handle, out Input);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("输入口状态获取 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("输入口状态获取 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 输出口状态获取
+        /// 返回3 成功
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">AsuMotion资源句柄</param>
+        /// <param name="Output">IO状态缓冲区，长度至少为2，函数调用成功后，这里面的值将为IO状态</param>
+        /// <returns></returns>
+        public static int AsuMotion_GetOutputIO(IntPtr handle, out ushort[] Output)
+        {
+            AsuMotionError ret = AsuMotionGetOutputIO(handle, out Output);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("输出口状态获取 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("输出口状态获取 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 当前机器坐标位置脉冲数获取
+        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回：
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="Steps">一个存储各轴脉冲数的结构体</param>
+        /// <returns></returns>
+        public static int AsuMotion_GetSteps(IntPtr handle, out AsuMotionAxisDataInt Steps)
+        {
+            AsuMotionError ret = AsuMotionGetSteps(handle, out Steps);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("当前机器坐标位置脉冲数获取 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("当前机器坐标位置脉冲数获取 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 当前各坐标轴最大速度获取
+        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回：
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="MaxSpeed">板卡各轴最大运动速度的存储区域，单位毫米每分钟</param>
+        /// <returns></returns>
+        public static int AsuMotion_GetMaxSpeed(IntPtr handle, out AsuMotionAxisData MaxSpeed)
+        {
+            AsuMotionError ret = AsuMotionGetMaxSpeed(handle, out MaxSpeed);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("当前各坐标轴最大速度获取 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("当前各坐标轴最大速度获取 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 光滑系数获取
+        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回：
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="pSmoothCoff">板卡光滑系数的存储区域</param>
+        /// <returns></returns>
+        public static int AsuMotion_GetSmoothCoff(IntPtr handle, out uint pSmoothCoff)
+        {
+            AsuMotionError ret = AsuMotionGetSmoothCoff(handle, out pSmoothCoff);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("光滑系数获取 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("光滑系数获取 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 单位距离脉冲数获取
+        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回：
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="StepsPerUnit">板卡脉冲每毫米的参数配置值的存储区域</param>
+        /// <returns></returns>
+        public static int AsuMotion_GetStepsPerUnit(IntPtr handle, out AsuMotionAxisDataInt StepsPerUnit)
+        {
+            AsuMotionError ret = AsuMotionGetStepsPerUnit(handle, out StepsPerUnit);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("单位距离脉冲数获取 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("单位距离脉冲数获取 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 查询当前运动卡是否处于运动状态中
+        /// 返回3 空闲状态
+        /// 返回4 运动状态
+        /// 返回-1 异常
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <returns></returns>
+        public static int AsuMotion_IsDone(IntPtr handle)
+        {
+            try
+            {
+                AsuMotionError ret = AsuMotionIsDone(handle);
+                switch (ret)
+                {
+                    case AsuMotionError.AsuMotion_True:
+                        LogHelper.WriteLog("当前运动卡处于 空闲 状态");
+                        return 3;
+                    default:
+                        LogHelper.WriteLog("当前运动卡处于 运动 状态");
+                        return 4;  // AsuMotion_False
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.WriteLog("执行 AsuMotionIsDone 异常：" + e.Message);
+                return -1;
+            }
+        }
+
+        #endregion
+
+        #region 停止运动函数
+
+        /// <summary>
+        /// 急停
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <returns></returns>
+        public static int AsuMotion_EStop(IntPtr handle)
         {
             AsuMotionError ret = AsuMotionEStop(handle);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
                     LogHelper.WriteLog("急停 成功");
-                    return 0;
+                    return 3;
                 default:
-                    LogHelper.WriteLog("急停 失败");
-                    return 1;  // AsuMotion_False
+                    LogHelper.WriteLog("急停 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         /// <summary>
-        /// 输出口状态获取
+        /// 停止由运动控制卡规划的某个轴的运动
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
-        /// <param name="handle">AsuMotion资源句柄</param>
-        /// <param name="pOutput">IO状态缓冲区，长度至少为2，函数调用成功后，这里面的值将为IO状态</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="Axis">配置当前需要运行的轴</param>
         /// <returns></returns>
-        public static int Asu_MotionGetOutputIO(IntPtr handle, ushort[] pOutput)
+        public static int AsuMotion_CardPlanStop(IntPtr handle, AsuMotionAxisMaskType Axis)
         {
-            AsuMotionError ret = AsuMotionGetOutputIO(handle, pOutput);
+            AsuMotionError ret = AsuMotionCardPlanStop(handle, Axis);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("输出口状态获取 成功");
-                    return 0;
+                    LogHelper.WriteLog("停止由运动控制卡规划的特定轴的运动 成功");
+                    return 3;
                 default:
-                    LogHelper.WriteLog("输出口状态获取 失败");
-                    return 1;  // AsuMotion_False
+                    LogHelper.WriteLog("停止由运动控制卡规划的特定轴的运动 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 停止由运动控制卡规划的所有轴的运动
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <returns></returns>
+        public static int AsuMotion_CardPlanStopAll(IntPtr handle)
+        {
+            AsuMotionError ret = AsuMotionCardPlanStopAll(handle);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("停止由运动控制卡规划的所有轴的运动 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("停止由运动控制卡规划的所有轴的运动 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         #endregion
 
-        #region TODO
+        #region PC规划与运动控制卡规划共用的配置函数
 
         /// <summary>
-        /// 配置输入引脚的特殊功能
+        /// 配置机器坐标
+        /// 返回3 空闲状态；
+        /// 返回4 运动状态
         /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <param name="Position">一个存储各轴机器坐标的结构体</param>
+        /// <returns></returns>
+        public static int AsuMotion_SetMachineCoordinate(IntPtr handle, AsuMotionAxisMaskType AxisMask, AsuMotionAxisData Position)
+        {
+            AsuMotionError ret = AsuMotionSetMachineCoordinate(handle, AxisMask, ref Position);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置机器坐标 当前运动卡处于 空闲 状态");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置机器坐标 当前运动卡处于 运动 状态");
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        ///  <summary>
+        /// 配置单位脉冲数
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="StepsPerUnit">单位脉冲数</param>
+        /// <returns></returns>
+        public static int AsuMotion_SetStepsPerUnit(IntPtr handle, ref AsuMotionAxisDataInt StepsPerUnit)
+        {
+            AsuMotionError ret = AsuMotionSetStepsPerUnit(handle, ref StepsPerUnit);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置单位脉冲数 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置单位脉冲数 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 配置工作偏移
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="WorkOffset">工作偏移</param>
+        /// <returns></returns>
+        public static int AsuMotion_SetWorkOffset(IntPtr handle, ref AsuMotionAxisDataInt WorkOffset)
+        {
+            AsuMotionError ret = AsuMotionSetWorkOffset(handle, ref WorkOffset);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置工作偏移 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置工作偏移 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 配置光滑系数和脉冲延时
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="DelayBetweenPulseAndDir">脉冲的有效沿和方向的有效沿之间有充分的时间差</param>
+        /// <param name="SmoothCoff">光滑系数</param>
+        /// <returns></returns>
+        public static int Asu_Motion_SetSmoothCoff(IntPtr handle, ushort DelayBetweenPulseAndDir, int SmoothCoff)
+        {
+            AsuMotionError ret = AsuMotionSetSmoothCoff(handle, DelayBetweenPulseAndDir, SmoothCoff);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置光滑系数和脉冲延时 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置光滑系数和脉冲延时 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 配置运动卡差分输出的信号映射
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="FunSel">映射号数组，共16个元素，其值得设定将反应16个差分输出的内容</param>
+        /// <param name="NegMask">设定16个差分输出口是否反向输出</param>
+        /// <returns></returns>
+        public static int AsuMotion_SetDifferentialOutputMapping(IntPtr handle, byte[] FunSel, AsuMotionBitMaskType NegMask)
+        {
+            AsuMotionError ret = AsuMotionSetDifferentialOutputMapping(handle, FunSel, NegMask);
+            switch (ret)
+            {
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置运动卡差分输出的信号映射 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置运动卡差分输出的信号映射 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
+            }
+        }
+
+        /// <summary>
+        /// 配置运动卡数字量输入功能
+        /// 返回3 成功；
+        /// 返回4 失败
+        /// </summary>
+        /// <param name="handle">设备句柄</param>
         /// <param name="InputIOEnable">输入引脚使能 bit0--> Input0 bit2--> Input2 bit7--> Input7</param>
         /// <param name="InputIONeg">输入引脚触发信号反相 bit0--> Input0 bit2--> Input2 bit7--> Input7</param>
         /// <param name="InputIOPin">输入引脚映射 0--> Input0 2--> Input2 7--> Input7</param>
         /// <returns></returns>
-        public static int Asu_MotionSetInputIOEngineDir(IntPtr handle,
+        public static int AsuMotion_SetInputIOEngineDir(IntPtr handle,
             UInt64 InputIOEnable,
             UInt64 InputIONeg,
             byte[] InputIOPin)
@@ -678,305 +1012,193 @@ namespace AsuDll
             AsuMotionError ret = AsuMotionSetInputIOEngineDir(handle, InputIOEnable, InputIONeg, InputIOPin);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置运动卡数字量输入功能 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置运动卡数字量输入功能 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         /// <summary>
-        /// 获取输入信号
-        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回
-        /// 成功返回 0
-        /// 设备返回 1
+        /// 配置运动卡模拟量输出和数字量输出
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
-        /// <param name="Input">用于存储输入信号值的存储区域</param>
+        /// <param name="AsuMotion">设备句柄</param>
+        /// <param name="Sync">是否同步输出，在使用卐千规划时，可以采用同步输出，使得外部时序能够严格保证</param>
+        /// <param name="AnalogOut">两个元素的数组，设置模拟量输出</param>
+        /// <param name="DigitalOut">两个元素的数组，设置数字量输出</param>
         /// <returns></returns>
-        public static int Asu_MotionGetInputIO(IntPtr handle, ushort[] Input)
+        public static int AsuMotion_SetOutput(IntPtr handle, ushort Sync, short[] AnalogOut, ushort[] DigitalOut)
         {
-            AsuMotionError ret = AsuMotionGetInputIO(handle, Input);
+            AsuMotionError ret = AsuMotionSetOutput(handle, Sync, AnalogOut, DigitalOut);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置运动卡模拟量输出和数字量输出 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置运动卡模拟量输出和数字量输出 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
+        #endregion
 
+        #region 回原点相关的参数配置函数
 
         /// <summary>
-        /// 配置主轴输出
-        /// 成功返回 0
-        /// 设备返回 1
+        /// 配置回原点的管脚
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
         /// </summary>
-        /// <param name="Out">主轴速率配置值，最大为65535</param>
+        /// <param name="AsuMotion">设备句柄</param>
+        /// <param name="InputIOPin">一个包含9个元素的数组，分别代表九个轴的回原点的信号选择，如果选择的值大于等于32，那么选择的信号为其逻辑反，也就是说原来如果高电平有效，那么现在将变成低电平有效</param>
         /// <returns></returns>
-        public static int Asu_MotionSetSpindle(IntPtr handle, ushort Out)
+        public static int AsuMotion_SetHomingSignal(IntPtr handle, byte[] InputIOPin)
         {
-            AsuMotionError ret = AsuMotionSetSpindle(handle, Out);
+            AsuMotionError ret = AsuMotionSetHomingSignal(handle, InputIOPin);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置回原点的管脚 成功");
+                    return 0;
+                default:
+                    LogHelper.WriteLog("配置回原点的管脚 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;  // AsuMotion_Device_Is_Null
             }
         }
 
-
-
         /// <summary>
-        /// 获取板卡细分数
+        /// 请求一次回原点
+        /// 返回0 成功；
+        /// 返回1 设备句柄为空指针，一般因为没有打开设备导致；
+        /// 返回7 当前状态下不能进行回原点，因为前面提交的其他操作还未完成
         /// </summary>
-        /// <param name="pSmoothCoff">板卡细分数的存储区域</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="Type">设置回原点的方式，目前支持三种方式</param>
+        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <param name="Count">设置回原点采用多次回原点时，回原点的次数</param>
+        /// <param name="Acceleration">一个存储各轴加速度的结构体</param>
+        /// <param name="MaxSpeed">一个存储各轴速度的结构体</param>
         /// <returns></returns>
-        public static int Asu_MotionGetSmoothCoff(IntPtr handle, ref UInt32 pSmoothCoff)
+        public static int AsuMotion_GoHome(IntPtr handle,
+            AsuMotionHomingType Type,
+            AsuMotionAxisMaskType AxisMask,
+            ushort Count,
+            ref AsuMotionAxisData Acceleration,
+            ref AsuMotionAxisData MaxSpeed)
         {
-            AsuMotionError ret = AsuMotionGetSmoothCoff(handle, ref pSmoothCoff);
+            AsuMotionError ret = AsuMotionGoHome(handle, Type, AxisMask, Count, ref Acceleration, ref MaxSpeed);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_Error_Ok:
+                    LogHelper.WriteLog("请求一次回原点 成功");
+                    return 0;
+                case AsuMotionError.AsuMotion_Device_Is_Null:
+                    LogHelper.WriteLog("请求一次回原点 失败，设备句柄为空指针，一般因为没有打开设备导致" + "---" + AsuMotion_GetErrorMessage(1));
+                    return 1;
+                default:
+                    LogHelper.WriteLog("请求一次回原点 失败，当前状态下不能进行回原点，因为前面提交的其他操作还未完成" + "---" + AsuMotion_GetErrorMessage(7));
+                    return 7;  // AsuMotion_CurrentState_Isnot_Idle
             }
         }
 
+        #endregion
+
+        #region 运动控制卡规划相关的参数配置函数
 
         /// <summary>
-        /// 获取板卡脉冲每毫米的参数配置值
-        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回
-        /// 成功返回 0
-        /// 设备返回 1
+        /// 配置运动卡规划运动的加速度
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
-        /// <param name="StepsPerUnit">板卡脉冲每毫米的参数配置值的存储区域</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="Acceleration">一个存储各轴加速度的结构体</param>
         /// <returns></returns>
-        public static int Asu_MotionGetStepsPerUnit(IntPtr handle, int[] StepsPerUnit)
+        public static int AsuMotion_SetAccelaration(IntPtr handle, ref AsuMotionAxisData Acceleration)
         {
-            AsuMotionError ret = AsuMotionGetStepsPerUnit(handle, StepsPerUnit);
+            AsuMotionError ret = AsuMotionSetAccelaration(handle, ref Acceleration);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置运动卡规划运动的加速度 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置运动卡规划运动的加速度 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         /// <summary>
-        /// 配置板卡脉冲与方向输出的反相
+        /// 配置运动卡规划运动的最大速度
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
-        /// <param name="StepNeg">脉冲反相掩码，0 --> 任何轴脉冲输出不反相， 1 --> X轴脉冲输出反相， 5 --> X与Z轴脉冲输出反相</param>
-        /// <param name="DirNeg">方向反相掩码，0 --> 任何轴方向输出不反相， 1 --> X轴方向输出反相， 5 --> X与Z轴方向输出反相</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="MaxSpeed">一个存储各轴速度的结构体</param>
         /// <returns></returns>
-        public static int Asu_MotionSetStepNegAndDirNeg(IntPtr handle, byte StepNeg, byte DirNeg)
+        public static int AsuMotion_SetMaxSpeed(IntPtr handle, ref AsuMotionAxisData MaxSpeed)
         {
-            AsuMotionError ret = AsuMotionSetStepNegAndDirNeg(handle, StepNeg, DirNeg);
+            AsuMotionError ret = AsuMotionSetMaxSpeed(handle, ref MaxSpeed);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置运动卡规划运动的最大速度 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置运动卡规划运动的最大速度 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         /// <summary>
-        /// 相对于机械坐标的运动
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
+        /// 配置正向软限位
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
-        /// <param name="AxisMask">运动轴使能掩码，0 --> 任何轴的运动都被禁止， 1 --> X轴运动使能 3 --> X,Y轴运动使能</param>
-        /// <param name="PositionGiven">运动目的位置，单位毫米 0 --> X 1 --> Y 2 --> Z 3 --> A</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="SoftPositiveLimit">正向软限位坐标的结构体</param>
         /// <returns></returns>
-        public static int Asu_MotionMoveAbsolute(IntPtr handle, ushort AxisMask, double[] PositionGiven)
+        public static int AsuMotion_SetSoftPositiveLimit(IntPtr handle, ref AsuMotionAxisData SoftPositiveLimit)
         {
-            AsuMotionError ret = AsuMotionMoveAbsolute(handle, AxisMask, PositionGiven);
+            AsuMotionError ret = AsuMotionSetSoftPositiveLimit(handle, ref SoftPositiveLimit);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_Error_Ok: return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null: return 1;
-                case AsuMotionError.AsuMotion_Error: return 2;
-                default: return 8;  // AsuMotion_CurrentState_Isnot_CardPlan
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置正向软限位 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置正向软限位 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
         /// <summary>
-        /// 配置板卡规划运动的加速度与最大速度
-        /// 成功返回 0
-        /// 失败返回 1
+        /// 配置反向软限位
+        /// 返回3 成功；
+        /// 返回4 失败
         /// </summary>
-        /// <param name="Acceleration">加速度 0 --> X轴 1 --> Y轴 2 --> Z轴 3 --> A轴</param>
-        /// <param name="MaxSpeed">最大允许速度 0 --> X轴 1 --> Y轴 2 --> Z轴 3 --> A轴</param>
+        /// <param name="handle">设备句柄</param>
+        /// <param name="SoftNegtiveLimit">反向软限位坐标的结构体</param>
         /// <returns></returns>
-        public static int Asu_MotionSetAccelarationMaxSpeed(IntPtr handle, double[] Acceleration, double[] MaxSpeed)
+        public static int AsuMotion_SetSoftNegtiveLimit(IntPtr handle, ref AsuMotionAxisData SoftNegtiveLimit)
         {
-            AsuMotionError ret = AsuMotionSetAccelarationMaxSpeed(handle, Acceleration, MaxSpeed);
+            AsuMotionError ret = AsuMotionSetSoftNegtiveLimit(handle, ref SoftNegtiveLimit);
             switch (ret)
             {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
+                case AsuMotionError.AsuMotion_True:
+                    LogHelper.WriteLog("配置反向软限位 成功");
+                    return 3;
+                default:
+                    LogHelper.WriteLog("配置反向软限位 失败" + "---" + AsuMotion_GetErrorMessage(4));
+                    return 4;  // AsuMotion_False
             }
         }
 
-        /// <summary>
-        /// 距离无限远的运动
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="AxisMask">运动轴使能掩码，0 --> 任何轴的运动都被禁止， 1 --> X轴运动使能 3 --> X,Y轴运动使能</param>
-        /// <param name="Acceleration">加速度 0 --> X轴 1 --> Y轴 2 --> Z轴 3 --> A轴</param>
-        /// <param name="MaxSpeed">最大允许速度 0 --> X轴 1 --> Y轴 2 --> Z轴 3 --> A轴</param>
-        /// <returns></returns>
-        public static int Asu_MotionMoveAtSpeed(IntPtr handle, ushort AxisMask, double[] Acceleration, double[] MaxSpeed)
-        {
-            AsuMotionError ret = AsuMotionMoveAtSpeed(handle, AxisMask, Acceleration, MaxSpeed);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 软限位配置
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="MaxSoftLimit">允许运动到的最大机械位置 0 --> X轴 1 --> Y轴 2 --> Z轴 3 --> A轴</param>
-        /// <param name="MinSoftLimit">允许运动到的最小机械位置 0 --> X轴 1 --> Y轴 2 --> Z轴 3 --> A轴</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetSoftLimit(IntPtr handle, double[] MaxSoftLimit, double[] MinSoftLimit)
-        {
-            AsuMotionError ret = AsuMotionSetSoftLimit(handle, MaxSoftLimit, MinSoftLimit);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 获取板卡各轴最大运动速度
-        /// 目前直接返回 AsuMotion_True，但不确定之后的sdk失败会返回什么，所以按如下返回
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="MaxSpeed">板卡各轴最大运动速度的存储区域，单位毫米每分钟</param>
-        /// <returns></returns>
-        public static int Asu_MotionGetMaxSpeed(IntPtr handle, double[] MaxSpeed)
-        {
-            AsuMotionError ret = AsuMotionGetMaxSpeed(handle, MaxSpeed);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 停止由板卡规划的特定的轴的运动,NEED TEST
-        /// 成功返回 0
-        /// 失败返回 1
-        /// </summary>
-        /// <param name="Axis">0 --> X轴停止运动， 1 --> Y轴停止运动 2 --> Z轴停止运动</param>
-        /// <returns></returns>
-        public static int Asu_MotionStop(IntPtr handle, ushort Axis)
-        {
-            AsuMotionError ret = AsuMotionCardPlanStop(handle, Axis);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 配置板卡当前的机械坐标
-        /// 
-        /// </summary>
-        /// <param name="Posi">机械坐标，单位毫米 0 --> X 1 --> Y 2 --> Z 3 --> A</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetCoordinate(IntPtr handle, double[] Posi)
-        {
-            AsuMotionError ret = AsuMotionSetCoordinate(handle, Posi);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_True: return 0;
-                default: return 1;  // AsuMotion_False
-            }
-        }
-
-        /// <summary>
-        /// 终止PC规划运动，不可由AsuMotionResume恢复运动状态
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// </summary>
-        /// <returns></returns>
-        public static int Asu_MotionAbort(IntPtr handle)
-        {
-            AsuMotionError ret = AsuMotionAbort(handle);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok: return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null: return 1;
-                default: return 2; // AsuMotion_Error
-            }
-        }
-
-
-
-
-
-        /// <summary>
-        /// AsuMotion PC规划添加圆弧  由目的终点，圆心，法线确定圆平面
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// 返回5 前状态下不能添加PC的规划，因为缓冲区已经满了
-        /// 返回6 前状态下不能进行PC的规划，因为前面提交的其他操作还未完成
-        /// </summary>
-        /// <param name="endPositon">目的终点</param>
-        /// <param name="center">圆心</param>
-        /// <param name="normal">法线终点，起点为原点</param>
-        /// <param name="turn"></param>
-        /// <param name="vel">期望圆弧运动的速度</param>
-        /// <param name="ini_maxvel">最大速度</param>
-        /// <param name="acc">加速度</param>
-        public static int Asu_MotionAddCircle(IntPtr handle, 
-                IntPtr AsuMotion,
-                ref AsuMotionAxisData endPositon,
-                ref AsuMotionCartesian center,
-                ref AsuMotionCartesian normal,
-                int turn,
-                double vel,
-                double ini_maxvel,
-                double acc)
-        {
-            AsuMotionError ret = AsuMotionAddCircle(handle, ref endPositon, ref center, ref normal, turn, vel, ini_maxvel, acc);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok: return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null: return 1;
-                case AsuMotionError.AsuMotion_Error: return 2;
-                case AsuMotionError.AsuMotion_Buffer_Full: return 5;
-                default: return 6; // AsuMotion_CurrentState_Isnot_PCPlan
-            }
-        }
-
-        /// <summary>
-        /// 设置PC规划运动的停止类型
-        /// 返回0 配置成功，
-        /// 返回2 配置失败，
-        /// 返回1 参数handle为空指针，一般因为没有打开设备导致
-        /// </summary>
-        /// <param name="type">停止类型 </param>
-        /// <param name="tolerance">精度要求，目标位值和当前位值的绝对值小于此数时规划结束了</param>
-        /// <returns></returns>
-        public static int Asu_MotionSetStopType(IntPtr handle, AsuMotionStopType type, double tolerance)
-        {
-            AsuMotionError ret = AsuMotionSetStopType(handle, type, tolerance);
-            switch (ret)
-            {
-                case AsuMotionError.AsuMotion_Error_Ok: return 0;
-                case AsuMotionError.AsuMotion_Device_Is_Null: return 1;
-                default: return 2; // AsuMotion_Error
-            }
-        }
+        #endregion
 
         #endregion
     }

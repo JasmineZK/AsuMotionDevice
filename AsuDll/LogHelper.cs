@@ -7,7 +7,7 @@ namespace AsuDll
     /// </summary>
     public class LogHelper
     {
-        static ILog loger = LogManager.GetLogger( "Asu" );
+        static ILog loger = LogManager.GetLogger( "Asu_Sdk" );
 
         public static void WriteLog(string info)
         {
