@@ -74,10 +74,10 @@ namespace AsuDll
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
-                    LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息成功，序列号为：" + Encoding.UTF8.GetString(serialOfDevice));
+                    LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息 成功");
                     return 3;
                 default:
-                    LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息失败" + "---" +AsuMotion_GetErrorMessage(4));
+                    LogHelper.WriteLog("获取设备 " + numberOfDevice + " 信息 失败" + "---" +AsuMotion_GetErrorMessage(4));
                     return 4;  // AsuMotion_False
             }
         }
@@ -87,7 +87,7 @@ namespace AsuDll
         /// 返回有效的设备句柄 成功；
         /// 返回空指针 失败
         /// </summary>
-        /// <param name="numberOfDevice">设备序号，从1开始</param>
+        /// <param name="numberOfDevice">设备序号，从 1 开始</param>
         /// <param name="handle">设备句柄</param>
         /// <returns></returns>
         public static IntPtr AsuMotion_Open(int numberOfDevice)
@@ -554,11 +554,11 @@ namespace AsuDll
         /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="AxisMask">配置当前需要运行的轴</param>
+        /// <param name="axisMask">配置当前需要运行的轴</param>
         /// <returns></returns>
-        public static int AsuMotion_MoveAtConstSpeed(IntPtr handle, AsuMotionAxisMaskType AxisMask)
+        public static int AsuMotion_MoveAtConstSpeed(IntPtr handle, AsuMotionAxisMaskType axisMask)
         {
-            AsuMotionError ret = AsuMotionMoveAtConstSpeed(handle, AxisMask);
+            AsuMotionError ret = AsuMotionMoveAtConstSpeed(handle, axisMask);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_Error_Ok:
@@ -584,12 +584,12 @@ namespace AsuDll
         /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
         /// </summary>
         /// <param name="AsuMotion">设备句柄</param>
-        /// <param name="Axis">配置当前需要运行的轴</param>
-        /// <param name="PositionGiven">给定一个点动运行时，机器的目标位置。此位置为相对位置</param>
+        /// <param name="axis">配置当前需要运行的轴</param>
+        /// <param name="positionGiven">给定一个点动运行时，机器的目标位置。此位置为相对位置</param>
         /// <returns></returns>
-        public static int AsuMotion_JogOn(IntPtr handle, AsuMotionAxisIndexType Axis, double PositionGiven)
+        public static int AsuMotion_JogOn(IntPtr handle, AsuMotionAxisIndexType axis, double positionGiven)
         {
-            AsuMotionError ret = AsuMotionJogOn(handle, Axis, PositionGiven);
+            AsuMotionError ret = AsuMotionJogOn(handle, axis, positionGiven);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_Error_Ok:
@@ -615,12 +615,12 @@ namespace AsuDll
         /// 返回8 当前状态下不能进行运动控制卡的规划，因为前面提交的其他操作还未完成
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="AxisMask">配置当前需要运行的轴</param>
-        /// <param name="PositionGiven">给定一个点动运行时，机器的目标位置</param>
+        /// <param name="axisMask">配置当前需要运行的轴</param>
+        /// <param name="positionGiven">给定一个点动运行时，机器的目标位置</param>
         /// <returns></returns>
-        public static int AsuMotion_MoveAbsolute(IntPtr handle, AsuMotionAxisMaskType AxisMask, ref AsuMotionAxisData PositionGiven)
+        public static int AsuMotion_MoveAbsolute(IntPtr handle, AsuMotionAxisMaskType axisMask, ref AsuMotionAxisData positionGiven)
         {
-            AsuMotionError ret = AsuMotionMoveAbsolute(handle, AxisMask, ref PositionGiven);
+            AsuMotionError ret = AsuMotionMoveAbsolute(handle, axisMask, ref positionGiven);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_Error_Ok:
@@ -649,11 +649,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="Input">用于存储输入信号值的存储区域</param>
+        /// <param name="input">用于存储输入信号值的存储区域</param>
         /// <returns></returns>
-        public static int AsuMotion_GetInputIO(IntPtr handle, out ushort[] Input)
+        public static int AsuMotion_GetInputIO(IntPtr handle, out ushort[] input)
         {
-            AsuMotionError ret = AsuMotionGetInputIO(handle, out Input);
+            AsuMotionError ret = AsuMotionGetInputIO(handle, out input);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -671,11 +671,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">AsuMotion资源句柄</param>
-        /// <param name="Output">IO状态缓冲区，长度至少为2，函数调用成功后，这里面的值将为IO状态</param>
+        /// <param name="output">IO状态缓冲区，长度至少为2，函数调用成功后，这里面的值将为IO状态</param>
         /// <returns></returns>
-        public static int AsuMotion_GetOutputIO(IntPtr handle, out ushort[] Output)
+        public static int AsuMotion_GetOutputIO(IntPtr handle, out ushort[] output)
         {
-            AsuMotionError ret = AsuMotionGetOutputIO(handle, out Output);
+            AsuMotionError ret = AsuMotionGetOutputIO(handle, out output);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -694,11 +694,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="Steps">一个存储各轴脉冲数的结构体</param>
+        /// <param name="steps">一个存储各轴脉冲数的结构体</param>
         /// <returns></returns>
-        public static int AsuMotion_GetSteps(IntPtr handle, out AsuMotionAxisDataInt Steps)
+        public static int AsuMotion_GetSteps(IntPtr handle, out AsuMotionAxisDataInt steps)
         {
-            AsuMotionError ret = AsuMotionGetSteps(handle, out Steps);
+            AsuMotionError ret = AsuMotionGetSteps(handle, out steps);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -717,11 +717,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="MaxSpeed">板卡各轴最大运动速度的存储区域，单位毫米每分钟</param>
+        /// <param name="maxSpeed">板卡各轴最大运动速度的存储区域，单位毫米每分钟</param>
         /// <returns></returns>
-        public static int AsuMotion_GetMaxSpeed(IntPtr handle, out AsuMotionAxisData MaxSpeed)
+        public static int AsuMotion_GetMaxSpeed(IntPtr handle, out AsuMotionAxisData maxSpeed)
         {
-            AsuMotionError ret = AsuMotionGetMaxSpeed(handle, out MaxSpeed);
+            AsuMotionError ret = AsuMotionGetMaxSpeed(handle, out maxSpeed);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -740,11 +740,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="pSmoothCoff">板卡光滑系数的存储区域</param>
+        /// <param name="smoothCoff">板卡光滑系数的存储区域</param>
         /// <returns></returns>
-        public static int AsuMotion_GetSmoothCoff(IntPtr handle, out uint pSmoothCoff)
+        public static int AsuMotion_GetSmoothCoff(IntPtr handle, out uint smoothCoff)
         {
-            AsuMotionError ret = AsuMotionGetSmoothCoff(handle, out pSmoothCoff);
+            AsuMotionError ret = AsuMotionGetSmoothCoff(handle, out smoothCoff);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -763,11 +763,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="StepsPerUnit">板卡脉冲每毫米的参数配置值的存储区域</param>
+        /// <param name="stepsPerUnit">板卡脉冲每毫米的参数配置值的存储区域</param>
         /// <returns></returns>
-        public static int AsuMotion_GetStepsPerUnit(IntPtr handle, out AsuMotionAxisDataInt StepsPerUnit)
+        public static int AsuMotion_GetStepsPerUnit(IntPtr handle, out AsuMotionAxisDataInt stepsPerUnit)
         {
-            AsuMotionError ret = AsuMotionGetStepsPerUnit(handle, out StepsPerUnit);
+            AsuMotionError ret = AsuMotionGetStepsPerUnit(handle, out stepsPerUnit);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -840,11 +840,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="Axis">配置当前需要运行的轴</param>
+        /// <param name="axis">配置当前需要运行的轴</param>
         /// <returns></returns>
-        public static int AsuMotion_CardPlanStop(IntPtr handle, AsuMotionAxisMaskType Axis)
+        public static int AsuMotion_CardPlanStop(IntPtr handle, AsuMotionAxisMaskType axis)
         {
-            AsuMotionError ret = AsuMotionCardPlanStop(handle, Axis);
+            AsuMotionError ret = AsuMotionCardPlanStop(handle, axis);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -887,12 +887,12 @@ namespace AsuDll
         /// 返回4 运动状态
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="AxisMask">配置当前需要运行的轴</param>
-        /// <param name="Position">一个存储各轴机器坐标的结构体</param>
+        /// <param name="axisMask">配置当前需要运行的轴</param>
+        /// <param name="position">一个存储各轴机器坐标的结构体</param>
         /// <returns></returns>
-        public static int AsuMotion_SetMachineCoordinate(IntPtr handle, AsuMotionAxisMaskType AxisMask, AsuMotionAxisData Position)
+        public static int AsuMotion_SetMachineCoordinate(IntPtr handle, AsuMotionAxisMaskType axisMask, AsuMotionAxisData position)
         {
-            AsuMotionError ret = AsuMotionSetMachineCoordinate(handle, AxisMask, ref Position);
+            AsuMotionError ret = AsuMotionSetMachineCoordinate(handle, axisMask, ref position);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -1055,11 +1055,11 @@ namespace AsuDll
         /// 返回1 设备句柄为空指针，一般因为没有打开设备导致
         /// </summary>
         /// <param name="AsuMotion">设备句柄</param>
-        /// <param name="InputIOPin">一个包含9个元素的数组，分别代表九个轴的回原点的信号选择，如果选择的值大于等于32，那么选择的信号为其逻辑反，也就是说原来如果高电平有效，那么现在将变成低电平有效</param>
+        /// <param name="inputIOPin">一个包含9个元素的数组，分别代表九个轴的回原点的信号选择，如果选择的值大于等于32，那么选择的信号为其逻辑反，也就是说原来如果高电平有效，那么现在将变成低电平有效</param>
         /// <returns></returns>
-        public static int AsuMotion_SetHomingSignal(IntPtr handle, byte[] InputIOPin)
+        public static int AsuMotion_SetHomingSignal(IntPtr handle, byte[] inputIOPin)
         {
-            AsuMotionError ret = AsuMotionSetHomingSignal(handle, InputIOPin);
+            AsuMotionError ret = AsuMotionSetHomingSignal(handle, inputIOPin);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -1078,20 +1078,20 @@ namespace AsuDll
         /// 返回7 当前状态下不能进行回原点，因为前面提交的其他操作还未完成
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="Type">设置回原点的方式，目前支持三种方式</param>
-        /// <param name="AxisMask">配置当前需要运行的轴</param>
-        /// <param name="Count">设置回原点采用多次回原点时，回原点的次数</param>
-        /// <param name="Acceleration">一个存储各轴加速度的结构体</param>
-        /// <param name="MaxSpeed">一个存储各轴速度的结构体</param>
+        /// <param name="type">设置回原点的方式，目前支持三种方式</param>
+        /// <param name="axisMask">配置当前需要运行的轴</param>
+        /// <param name="count">设置回原点采用多次回原点时，回原点的次数</param>
+        /// <param name="acceleration">一个存储各轴加速度的结构体</param>
+        /// <param name="maxSpeed">一个存储各轴速度的结构体</param>
         /// <returns></returns>
         public static int AsuMotion_GoHome(IntPtr handle,
-            AsuMotionHomingType Type,
-            AsuMotionAxisMaskType AxisMask,
-            ushort Count,
-            ref AsuMotionAxisData Acceleration,
-            ref AsuMotionAxisData MaxSpeed)
+            AsuMotionHomingType type,
+            AsuMotionAxisMaskType axisMask,
+            ushort count,
+            ref AsuMotionAxisData acceleration,
+            ref AsuMotionAxisData maxSpeed)
         {
-            AsuMotionError ret = AsuMotionGoHome(handle, Type, AxisMask, Count, ref Acceleration, ref MaxSpeed);
+            AsuMotionError ret = AsuMotionGoHome(handle, type, axisMask, count, ref acceleration, ref maxSpeed);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_Error_Ok:
@@ -1116,11 +1116,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="Acceleration">一个存储各轴加速度的结构体</param>
+        /// <param name="acceleration">一个存储各轴加速度的结构体</param>
         /// <returns></returns>
-        public static int AsuMotion_SetAccelaration(IntPtr handle, ref AsuMotionAxisData Acceleration)
+        public static int AsuMotion_SetAccelaration(IntPtr handle, ref AsuMotionAxisData acceleration)
         {
-            AsuMotionError ret = AsuMotionSetAccelaration(handle, ref Acceleration);
+            AsuMotionError ret = AsuMotionSetAccelaration(handle, ref acceleration);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -1138,11 +1138,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="MaxSpeed">一个存储各轴速度的结构体</param>
+        /// <param name="maxSpeed">一个存储各轴速度的结构体</param>
         /// <returns></returns>
-        public static int AsuMotion_SetMaxSpeed(IntPtr handle, ref AsuMotionAxisData MaxSpeed)
+        public static int AsuMotion_SetMaxSpeed(IntPtr handle, ref AsuMotionAxisData maxSpeed)
         {
-            AsuMotionError ret = AsuMotionSetMaxSpeed(handle, ref MaxSpeed);
+            AsuMotionError ret = AsuMotionSetMaxSpeed(handle, ref maxSpeed);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -1160,11 +1160,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="SoftPositiveLimit">正向软限位坐标的结构体</param>
+        /// <param name="softPositiveLimit">正向软限位坐标的结构体</param>
         /// <returns></returns>
-        public static int AsuMotion_SetSoftPositiveLimit(IntPtr handle, ref AsuMotionAxisData SoftPositiveLimit)
+        public static int AsuMotion_SetSoftPositiveLimit(IntPtr handle, ref AsuMotionAxisData softPositiveLimit)
         {
-            AsuMotionError ret = AsuMotionSetSoftPositiveLimit(handle, ref SoftPositiveLimit);
+            AsuMotionError ret = AsuMotionSetSoftPositiveLimit(handle, ref softPositiveLimit);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:
@@ -1182,11 +1182,11 @@ namespace AsuDll
         /// 返回4 失败
         /// </summary>
         /// <param name="handle">设备句柄</param>
-        /// <param name="SoftNegtiveLimit">反向软限位坐标的结构体</param>
+        /// <param name="softNegtiveLimit">反向软限位坐标的结构体</param>
         /// <returns></returns>
-        public static int AsuMotion_SetSoftNegtiveLimit(IntPtr handle, ref AsuMotionAxisData SoftNegtiveLimit)
+        public static int AsuMotion_SetSoftNegtiveLimit(IntPtr handle, ref AsuMotionAxisData softNegtiveLimit)
         {
-            AsuMotionError ret = AsuMotionSetSoftNegtiveLimit(handle, ref SoftNegtiveLimit);
+            AsuMotionError ret = AsuMotionSetSoftNegtiveLimit(handle, ref softNegtiveLimit);
             switch (ret)
             {
                 case AsuMotionError.AsuMotion_True:

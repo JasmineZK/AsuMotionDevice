@@ -688,9 +688,9 @@ namespace TestAsuDll
 
         private void AsuMotionAddCircle(object sender, EventArgs e)
         {
-            AsuDll.AsuMotionAxisData end = new AsuMotionAxisData() { x = 0, y = 0, z = 0, a = 0, b = 0, c = 0, u = 0, v = 0, w = 0 }; // 坐标轴数据
-            AsuDll.AsuMotionCartesian center = new AsuMotionCartesian() { x = 1, y = 1, z = 1 };
-            AsuDll.AsuMotionCartesian normal = new AsuMotionCartesian() { x = 2, y = 2, z = 2 };
+            AsuDll.AsuMotionAxisData end = new AsuDll.AsuMotionAxisData() { x = 0, y = 0, z = 0, a = 0, b = 0, c = 0, u = 0, v = 0, w = 0 }; // 坐标轴数据
+            AsuDll.AsuMotionCartesian center = new AsuDll.AsuMotionCartesian() { x = 1, y = 1, z = 1 };
+            AsuDll.AsuMotionCartesian normal = new AsuDll.AsuMotionCartesian() { x = 2, y = 2, z = 2 };
             int turn = 1;
             double vel = 1;
             double ini_maxvel = 1;

@@ -163,24 +163,24 @@ namespace AsuDll
 
     public class AsuSdkHelper
     {
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern string AsuMotionGetErrorMessage(AsuMotionError errorCode);
 
         #region AsuMotion控制卡设备操作函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetDeviceNum();
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError GetDeviceInfo(int Num, out byte[] SerialString);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr AsuMotionOpen(int Num);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionClose(IntPtr AsuMotion);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionConfigDeviceDefault(IntPtr AsuMotion);
 
         #endregion
@@ -200,25 +200,25 @@ namespace AsuDll
 
         #region PC运动规划相关函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetCurrentPostion(IntPtr AsuMotion, ref AsuMotionAxisData Pos);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionPause(IntPtr AsuMotion);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionResume(IntPtr AsuMotion);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionAbort(IntPtr AsuMotion);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetStopType(IntPtr AsuMotion, AsuMotionStopType type, double tolerance);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionAddLine(IntPtr AsuMotion, ref AsuMotionAxisData end, double vel, double ini_maxvel, double acc);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionAddCircle(IntPtr AsuMotion,
             ref AsuMotionAxisData end,
             ref AsuMotionCartesian center,
@@ -228,7 +228,7 @@ namespace AsuDll
             double ini_maxvel,
             double acc);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionAddLineWithSyncIO(IntPtr AsuMotion,
             ref AsuMotionAxisData end,
             double vel,
@@ -253,73 +253,73 @@ namespace AsuDll
 
         #region 运动控制卡规划相关的函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionMoveAtConstSpeed(IntPtr AsuMotion, AsuMotionAxisMaskType AxisMask);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionJogOn(IntPtr AsuMotion, AsuMotionAxisIndexType Axis, double PositionGiven);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionMoveAbsolute(IntPtr AsuMotion, AsuMotionAxisMaskType AxisMask, ref AsuMotionAxisData PositionGiven);
 
         #endregion
 
         #region 运动控制卡状态获取相关的函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionGetInputIO(IntPtr AsuMotion, out ushort[] Input);
 
         [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
         public static extern AsuMotionError AsuMotionGetOutputIO(IntPtr AsuMotion, out ushort[] Output);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionGetSteps(IntPtr AsuMotion, out AsuMotionAxisDataInt Steps);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionGetMaxSpeed(IntPtr AsuMotion, out AsuMotionAxisData MaxSpeed);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionGetSmoothCoff(IntPtr AsuMotion, out uint pSmoothCoff);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionGetStepsPerUnit(IntPtr AsuMotion, out AsuMotionAxisDataInt StepsPerUnit);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionIsDone(IntPtr AsuMotion);
 
         #endregion
 
         #region 停止运动函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionEStop(IntPtr AsuMotion);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionCardPlanStop(IntPtr AsuMotion, AsuMotionAxisMaskType Axis);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionCardPlanStopAll(IntPtr AsuMotion);
 
         #endregion
 
         #region PC规划与运动控制卡规划共用的配置函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetMachineCoordinate(IntPtr AsuMotion, AsuMotionAxisMaskType AxisMask, ref AsuMotionAxisData Position);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetStepsPerUnit(IntPtr AsuMotion, ref AsuMotionAxisDataInt StepsPerUnit);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetWorkOffset(IntPtr AsuMotion, ref AsuMotionAxisDataInt WorkOffset);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetSmoothCoff(IntPtr AsuMotion, ushort DelayBetweenPulseAndDir, int SmoothCoff);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetDifferentialOutputMapping(IntPtr AsuMotion, byte[] FunSel, AsuMotionBitMaskType NegMask);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetInputIOEngineDir(IntPtr AsuMotion,
                 UInt64 InputIOEnable,
                 UInt64 InputIONeg,
@@ -347,16 +347,16 @@ namespace AsuDll
 
         #region 运动控制卡规划相关的参数配置函数
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetAccelaration(IntPtr AsuMotion, ref AsuMotionAxisData Acceleration);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetMaxSpeed(IntPtr AsuMotion, ref AsuMotionAxisData MaxSpeed);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetSoftPositiveLimit(IntPtr AsuMotion, ref AsuMotionAxisData SoftPositiveLimit);
 
-        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
+        [DllImport("AsuMotionDevice.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern AsuMotionError AsuMotionSetSoftNegtiveLimit(IntPtr AsuMotion, ref AsuMotionAxisData SoftNegtiveLimit);
 
         #endregion  
